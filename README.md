@@ -1,5 +1,5 @@
 # UWT CS Student Forum
 
-*This is a TCSS 460 Project* 
+TCSS 460 - Autumn 2023 
 
-UWT CS Student Forum that will help UWT CS students connecting and networking to each other.  
+UWT CS Student Forum will help UWT CS students connect and network with each other.  
