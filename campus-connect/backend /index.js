@@ -53,10 +53,17 @@ app.use(bodyParser.json());
 //   });
 // });
 
-//WEBSERVICE #1: manipulation of users 
+//WEBSERVICE #1: User Management Service
+// Methods:
+// POST: Create a new user
+// GET: Retrieve user information
+// PUT: Update user details
+// DELETE: Delete a user account
 
-// (1) Retrieve all records in population table
-// root URI: http://localhost:port/
+
+// (1) retrieve info on a specific user
+// root URI: http://localhost:port/users/:user
+//
 app.get("/", (request, response) => {
   const sqlQuery = "SELECT * FROM users;";
   dbConnection.query(sqlQuery, (err, result) => {
@@ -70,6 +77,8 @@ app.get("/", (request, response) => {
   });
 });
 
+
+//WEBSERVICE #2: Post Service
 // ----------------------------------------------
 // Ref: https://expressjs.com/en/4x/api.html#app
 // (C)  Create a server such that it binds and
