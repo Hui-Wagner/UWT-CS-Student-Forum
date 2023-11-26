@@ -77,6 +77,8 @@ app.get("/", (request, response) => {
   });
 });
 
+
+//WEBSERVICE #2: Post Service
 // ----------------------------------------------
 // Ref: https://expressjs.com/en/4x/api.html#app
 // (C)  Create a server such that it binds and
