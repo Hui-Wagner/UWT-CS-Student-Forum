@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 24, 2023 at 09:47 PM
+-- Generation Time: Nov 27, 2023 at 12:05 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `testing460`
+-- Database: `campusconnect`
 --
 
 -- --------------------------------------------------------
@@ -57,24 +57,25 @@ CREATE TABLE `Posts` (
   `Title` varchar(255) NOT NULL,
   `UpVotes` int(11) DEFAULT 0,
   `Content` text DEFAULT '',
-  `ViewCount` int(11) DEFAULT 0
+  `ViewCount` int(11) DEFAULT 0,
+  `PostDate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Posts`
 --
 
-INSERT INTO `Posts` (`PostID`, `SubForumID`, `UserID`, `Title`, `UpVotes`, `Content`, `ViewCount`) VALUES
-(1, 1, 1, 'Introduction', 10, 'Hello, I am new here!', 35),
-(2, 2, 2, 'Python Error', 5, 'I am facing an issue with my Python code...', 15),
-(3, 3, 3, 'Calculus question', 4, 'What is integration by parts?', 17),
-(4, 4, 4, 'Favorite Music Genre', 3, 'Discuss your favorite music genres and artists', 15),
-(5, 5, 5, 'Space Exploration', 4, 'Discuss the future of space exploration', 20),
-(6, 6, 6, 'Book Recommendations', 5, 'Share your favorite books and recommendations', 15),
-(7, 7, 7, 'Healthy Recipes', 6, 'Share your favorite healthy recipes', 14),
-(8, 8, 8, 'Best Travel Destinations', 1, 'Discuss the best travel destinations around the world', 10),
-(9, 9, 9, 'Favorite Cuisine', 2, 'Discuss your favorite cuisines and restaurants', 5),
-(10, 10, 10, 'Top 10 Movies of All Time', 10, 'Share your list of top 10 movies', 40);
+INSERT INTO `Posts` (`PostID`, `SubForumID`, `UserID`, `Title`, `UpVotes`, `Content`, `ViewCount`, `PostDate`) VALUES
+(1, 1, 1, 'Introduction', 10, 'Hello, I am new here!', 35, '2023-11-23 08:00:00'),
+(2, 2, 2, 'Python Error', 5, 'I am facing an issue with my Python code...', 15, '2023-11-23 09:00:00'),
+(3, 3, 3, 'Calculus question', 4, 'What is integration by parts?', 17, '2023-11-23 10:00:00'),
+(4, 4, 4, 'Favorite Music Genre', 3, 'Discuss your favorite music genres and artists', 15, '2023-11-23 11:00:00'),
+(5, 5, 5, 'Space Exploration', 4, 'Discuss the future of space exploration', 20, '2023-11-23 12:00:00'),
+(6, 6, 6, 'Book Recommendations', 5, 'Share your favorite books and recommendations', 15, '2023-11-23 13:00:00'),
+(7, 7, 7, 'Healthy Recipes', 6, 'Share your favorite healthy recipes', 14, '2023-11-23 14:00:00'),
+(8, 8, 8, 'Best Travel Destinations', 1, 'Discuss the best travel destinations around the world', 10, '2023-11-23 15:00:00'),
+(9, 9, 9, 'Favorite Cuisine', 2, 'Discuss your favorite cuisines and restaurants', 5, '2023-11-23 16:00:00'),
+(10, 10, 10, 'Top 10 Movies of All Time', 10, 'Share your list of top 10 movies', 40, '2023-11-23 17:00:00');
 
 -- --------------------------------------------------------
 
@@ -260,6 +261,8 @@ ALTER TABLE `SubForums`
 --
 ALTER TABLE `Users`
   ADD PRIMARY KEY (`User_ID`),
+  ADD UNIQUE KEY `UserName` (`UserName`),
+  ADD UNIQUE KEY `Email` (`Email`),
   ADD KEY `UserType` (`UserType`);
 
 --
@@ -316,42 +319,42 @@ ALTER TABLE `Users`
 -- Constraints for table `PinnedPosts`
 --
 ALTER TABLE `PinnedPosts`
-  ADD CONSTRAINT `pinnedposts_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `Posts` (`PostID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pinnedposts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `SubForums` (`SubForumID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pinnedposts_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `pinnedposts_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pinnedposts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `testing460`.`SubForums` (`SubForumID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pinnedposts_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `Posts`
 --
 ALTER TABLE `Posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`User_ID`),
-  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `SubForums` (`SubForumID`) ON DELETE CASCADE;
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`),
+  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `testing460`.`SubForums` (`SubForumID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `PostSubscriptions`
 --
 ALTER TABLE `PostSubscriptions`
-  ADD CONSTRAINT `postsubscriptions_ibfk_1` FOREIGN KEY (`SubscriberID`) REFERENCES `Users` (`User_ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `postsubscriptions_ibfk_2` FOREIGN KEY (`PostID`) REFERENCES `Posts` (`PostID`) ON DELETE CASCADE;
+  ADD CONSTRAINT `postsubscriptions_ibfk_1` FOREIGN KEY (`SubscriberID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `postsubscriptions_ibfk_2` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Responses`
 --
 ALTER TABLE `Responses`
-  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `Posts` (`PostID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `SubForums`
 --
 ALTER TABLE `SubForums`
-  ADD CONSTRAINT `creator` FOREIGN KEY (`CreatorID`) REFERENCES `Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `creator` FOREIGN KEY (`CreatorID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `Users`
 --
 ALTER TABLE `Users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`UserType`) REFERENCES `UserType` (`UserType`);
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`UserType`) REFERENCES `testing460`.`UserType` (`UserType`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
