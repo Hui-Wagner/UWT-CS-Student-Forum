@@ -51,6 +51,26 @@ const replyservice = require("./replyservice");
 app.use(replyservice);
 
 
+//link to likedislikeservice
+const likedislikeservice = require("./likedislikeservice");
+app.use(likedislikeservice);
+
+//link to moderationservice
+const moderationservice = require("./moderationservice");
+app.use(moderationservice);
+
+//link to searchservice
+const searchservice = require("./searchservice");
+app.use(searchservice);
+
+//link to subforumservice
+const subforumservice = require("./subforumservice");
+app.use(subforumservice);
+
+//link to subservice
+const subservice = require("./subservice");
+app.use(subservice);
+
 
 
 // ----------------------------------------------
