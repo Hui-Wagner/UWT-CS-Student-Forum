@@ -319,42 +319,42 @@ ALTER TABLE `Users`
 -- Constraints for table `PinnedPosts`
 --
 ALTER TABLE `PinnedPosts`
-  ADD CONSTRAINT `pinnedposts_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pinnedposts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `testing460`.`SubForums` (`SubForumID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pinnedposts_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `pinnedposts_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `campusconnect`.`Posts` (`PostID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pinnedposts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `campusconnect`.`SubForums` (`SubForumID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pinnedposts_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `campusconnect`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `Posts`
 --
 ALTER TABLE `Posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`),
-  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `testing460`.`SubForums` (`SubForumID`) ON DELETE CASCADE;
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `campusconnect`.`Users` (`User_ID`),
+  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`SubForumID`) REFERENCES `campusconnect`.`SubForums` (`SubForumID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `PostSubscriptions`
 --
 ALTER TABLE `PostSubscriptions`
-  ADD CONSTRAINT `postsubscriptions_ibfk_1` FOREIGN KEY (`SubscriberID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `postsubscriptions_ibfk_2` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE;
+  ADD CONSTRAINT `postsubscriptions_ibfk_1` FOREIGN KEY (`SubscriberID`) REFERENCES `campusconnect`.`Users` (`User_ID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `postsubscriptions_ibfk_2` FOREIGN KEY (`PostID`) REFERENCES `campusconnect`.`Posts` (`PostID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Responses`
 --
 ALTER TABLE `Responses`
-  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `testing460`.`Posts` (`PostID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `responses_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `campusconnect`.`Posts` (`PostID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `responses_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `campusconnect`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `SubForums`
 --
 ALTER TABLE `SubForums`
-  ADD CONSTRAINT `creator` FOREIGN KEY (`CreatorID`) REFERENCES `testing460`.`Users` (`User_ID`) ON DELETE SET NULL;
+  ADD CONSTRAINT `creator` FOREIGN KEY (`CreatorID`) REFERENCES `campusconnect`.`Users` (`User_ID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `Users`
 --
 ALTER TABLE `Users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`UserType`) REFERENCES `testing460`.`UserType` (`UserType`);
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`UserType`) REFERENCES `campusconnect`.`UserType` (`UserType`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

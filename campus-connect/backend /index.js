@@ -36,49 +36,23 @@ var app = express(express.json);
 app.use(cors());
 app.use(bodyParser.json());
 
-// ----------------------------------------------
-//EXAMPLE!!!!!!!!
-// (1) Retrieve all records in population table
-// root URI: http://localhost:port/
-// app.get("/", (request, response) => {
-//   const sqlQuery = "SELECT * FROM population;";
-//   dbConnection.query(sqlQuery, (err, result) => {
-//     if (err) {
-//       return response
-//         .status(400)
-//         .json({ Error: "Error in the SQL statement. Please check." });
-//     }
-//     response.setHeader("SQLQuery", sqlQuery); // send a custom header attribute
-//     return response.status(200).json(result);
-//   });
-// });
 
-//WEBSERVICE #1: User Management Service
-// Methods:
-// POST: Create a new user
-// GET: Retrieve user information
-// PUT: Update user details
-// DELETE: Delete a user account
+//link to postsservice
+const postsservice = require("./postsservice");
+app.use(postsservice);
 
 
-// (1) retrieve info on a specific user
-// root URI: http://localhost:port/users/:user
-//
-app.get("/", (request, response) => {
-  const sqlQuery = "SELECT * FROM users;";
-  dbConnection.query(sqlQuery, (err, result) => {
-    if (err) {
-      return response
-        .status(400)
-        .json({ Error: "Error in the SQL statement. Please check." });
-    }
-    response.setHeader("SQLQuery", sqlQuery); // send a custom header attribute
-    return response.status(200).json(result);
-  });
-});
+//link to userservice
+const userservice = require("./userservice");
+app.use(userservice);
+
+//link to replyservice
+const replyservice = require("./replyservice");
+app.use(replyservice);
 
 
-//WEBSERVICE #2: Post Service
+
+
 // ----------------------------------------------
 // Ref: https://expressjs.com/en/4x/api.html#app
 // (C)  Create a server such that it binds and
