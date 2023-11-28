@@ -1,0 +1,55 @@
+const express = require('express');
+const dbConnection = require('./config'); // Ensure you have a config file for your database setup
+
+const app = express();
+app.use(express.json());
+
+// POST: Subscribe to a topic or user
+app.post('/subscriptions', (req, res) => {
+  const { subscriberID, postID } = req.body;
+  const sqlInsert = "INSERT INTO PostSubscriptions (SubscriberID, PostID, TimeCreated) VALUES (?, ?, NOW())";
+  
+  dbConnection.query(sqlInsert, [subscriberID, postID], (err, results) => {
+    if (err) {
+      console.error("Error subscribing:", err);
+      return res.status(500).send("Error subscribing to the topic or user");
+    }
+    res.status(201).json({ subscriptionID: results.insertId });
+  });
+});
+
+// GET: Retrieve subscriptions for a user
+app.get('/subscriptions/:subscriberID', (req, res) => {
+  const { subscriberID } = req.params;
+  const sqlSelect = "SELECT * FROM PostSubscriptions WHERE SubscriberID = ?";
+  
+  dbConnection.query(sqlSelect, [subscriberID], (err, results) => {
+    if (err) {
+      console.error("Error fetching subscriptions:", err);
+      return res.status(500).send("Error fetching subscriptions");
+    }
+    res.status(200).json(results);
+  });
+});
+
+// DELETE: Unsubscribe from a topic or user
+app.delete('/subscriptions/:subscriptionID', (req, res) => {
+  const { subscriptionID } = req.params;
+  const sqlDelete = "DELETE FROM PostSubscriptions WHERE SubscriptionID = ?";
+  
+  dbConnection.query(sqlDelete, [subscriptionID], (err, results) => {
+    if (err) {
+      console.error("Error unsubscribing:", err);
+      return res.status(500).send("Error unsubscribing from the topic or user");
+    }
+    res.status(200).json({ message: "Unsubscribed successfully" });
+  });
+});
+
+// Replace this with your actual server's port
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Subscription service running on port ${PORT}`);
+});
+
+module.exports = app;
