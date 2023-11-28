@@ -42,11 +42,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 
-
-//link to authservice
-const subservice = require("./authservice");
-app.use(authservice);
-
+// Mounting 'authservice' at '/api/auth' namespaces our authentication routes.
+// This avoids conflicts with similarly named routes in other services
+// and allows for easy extension and middleware integration specific to auth.
+const authservice = require("./authservice");
+app.use('/api/auth', authservice);
 
 //link to postsservice
 const postsservice = require("./postsservice");
