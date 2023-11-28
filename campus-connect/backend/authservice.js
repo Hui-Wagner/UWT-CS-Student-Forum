@@ -30,7 +30,12 @@ router.post('/login', (req, res) => {
         }
 
         // If password matches, create a JWT for the user
-        const token = jwt.sign({ userId: user.User_ID }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const userType = results[0].UserType; // Assuming UserType is the column name in your Users table
+        const token = jwt.sign(
+          { userId: user.User_ID, role: userType },
+          process.env.JWT_SECRET,
+          { expiresIn: '24h' }
+        );        
 
         // Send the token back to the user
         res.json({ message: 'Login successful', token });
