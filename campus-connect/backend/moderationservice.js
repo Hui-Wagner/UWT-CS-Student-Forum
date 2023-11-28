@@ -23,18 +23,31 @@ var bodyParser = require("body-parser");
 // ----------------------------------------------
 var app = express(express.json);
 
-// ----------------------------------------------
-// (B)  Use the epxress cors middleware
-//      Cross-origin resource sharing (CORS)
-//      is a technique that restricts specified
-//      resources within web page to be accessed
-//      from other domains on which the origin
-//      resource was initiated the HTTP request
-//      Also use the bodyParser to parse in
-//      format the body of HTTP Requests
-// ----------------------------------------------
-app.use(cors());
-app.use(bodyParser.json());
+  // ----------------------------------------------
+  // (1) PUT: Mark a post as inappropriate or spam
+  // URI: http://localhost:port/mod/
+  app.put("/posts/:postid", (request, response) => {
+    const postid = request.params.postid;
+    
+    const sqlQuery = `UPDATE users SET content = ?
+      WHERE postid = ? ;`;
+    const values = [
+      request.body.content
+    ];
+  
+    console.log(sqlQuery); // for debugging purposes:
+    dbConnection.query(sqlQuery, [...values, postid], (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: Post was not edited." });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Successful: Post was edited!." });
+    });
+  });
+
 
 
 module.exports = app;

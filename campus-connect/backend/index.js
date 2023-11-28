@@ -7,6 +7,11 @@
 // Express API Reference:
 // https://expressjs.com/en/resources/middleware/cors.html
 
+
+//configure dotenv in main server file
+require('dotenv').config();
+
+
 // ----------------------------------------------
 // retrieve necessary files (express and cors)
 const express = require("express");
@@ -35,6 +40,12 @@ var app = express(express.json);
 // ----------------------------------------------
 app.use(cors());
 app.use(bodyParser.json());
+
+
+
+//link to authservice
+const subservice = require("./authservice");
+app.use(authservice);
 
 
 //link to postsservice
