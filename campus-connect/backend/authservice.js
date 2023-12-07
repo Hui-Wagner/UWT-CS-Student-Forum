@@ -4,7 +4,7 @@
  *  The use of bcrypt ensures that the password comparison is secure, even if the passwords stored in the database are hashed. */
 
 const express = require('express');
-const bcrypt = require('bcryptjs');
+//const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dbConnection = require('./config'); // Ensure this is the path to your config file
 
