@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Topics</title>
+    <link rel="stylesheet" href="../client/style.css">
+	<script rel="preconnect" src="https://kit.fontawesome.com/241f6baf1e.js" crossorigin="anonymous"></script>
+</head>
+<header>
+	<a id="logo" href="/">
+        <img src="../client/Assets/campus%20connect%20logo.JPG" alt="Campus Connect Logo">
+    </a>
+    
+	<h1 id="page-title">Campus Connect</h1>
+
+	<!-- search -->
+	<div id="search-bar">
+		<i class="fas fa-search"></i>
+		<input class="input" type="text" placeholder="Search Campus Connect">
+		<div id="search-results"></div>
+	</div>
+
+	<button id = "login">Login</button>
+</header>
+
+<body>
+	<main id="page-content">
+		<div id="results-list">
+			<div id="filter-list" class="box">
+				<div class="filter" onclick="toggleFilter(0, true)">
+					<i class="fa-solid fa-user-group"></i>
+					<p>Communities</p>
+				</div>
+				<div class="filter" onclick="toggleFilter(1, true)">
+					<i class="fa-solid fa-message"></i>
+					<p>Posts</p>
+				</div>
+				<div class="filter" onclick="toggleFilter(2, true)">
+					<i class="fa-solid fa-user"></i>
+					<p>Users</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- scroll up -->
+		<a id="scroll-up" class="button" onclick="scrollToTop()">
+			<i class="fas fa-rocket"></i>
+			<p>Scroll to top</p>
+		</a>
+
+		<!-- post viewer -->
+		<div id="post-viewer">
+
+		</div>
+	</main>
+</body>
+</html>
