@@ -23,6 +23,18 @@ var bodyParser = require("body-parser");
 // ----------------------------------------------
 var app = express(express.json);
 
+// ----------------------------------------------
+// (B)  Use the epxress cors middleware
+//      Cross-origin resource sharing (CORS)
+//      is a technique that restricts specified
+//      resources within web page to be accessed
+//      from other domains on which the origin
+//      resource was initiated the HTTP request
+//      Also use the bodyParser to parse in
+//      format the body of HTTP Requests
+// ----------------------------------------------
+app.use(cors());
+app.use(bodyParser.json());
 
 //WEBSERVICE #1: User Management Service
 // Methods:
