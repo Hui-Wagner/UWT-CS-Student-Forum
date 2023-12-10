@@ -32,6 +32,33 @@
 <body>
 
     <script>
+      $(document).ready(function () {
+    //$(".table").hide();
+    fetchHomePageForumData();
+});
+
+function fetchHomePageForumData() {
+    // Make an AJAX request to fetch forum data
+    $.ajax({
+        url: 'http://localhost:3000/forums',
+        method: 'GET',
+        success: function (data) {
+            // On success, iterate through the data and add list items to the category list
+            data.forEach(function (forum) {
+                // Create a new list item with an anchor inside
+                var newListItem = $('<li><a href="#" id="' + forum.Name + '">' + forum.Name + '</a></li>');
+
+                // Append the new list item to the category list
+                $(".category_list").append(newListItem);
+            });
+        },
+        error: function () {
+            // Handle error
+            console.error('Failed to fetch forum data.');
+        }
+    });
+}
+
         // JavaScript to handle opening and closing modals
         function openLoginModal() {
           document.getElementById('loginModal').style.display = 'block';
