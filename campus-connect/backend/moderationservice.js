@@ -23,30 +23,30 @@ var bodyParser = require("body-parser");
 // ----------------------------------------------
 var app = express(express.json);
 
-  // ----------------------------------------------
-  // (1) PUT: Mark a post as inappropriate or spam
-  // URI: http://localhost:port/mod/
-  app.put("/posts/:postid", (request, response) => {
-    const postid = request.params.postid;
+  // // ----------------------------------------------
+  // // (1) PUT: Mark a post as inappropriate or spam
+  // // URI: http://localhost:port/mod/
+  // app.put("/posts/:postid", (request, response) => {
+  //   const postid = request.params.postid;
     
-    const sqlQuery = `UPDATE users SET content = ?
-      WHERE postid = ? ;`;
-    const values = [
-      request.body.content
-    ];
+  //   const sqlQuery = `UPDATE users SET content = ?
+  //     WHERE postid = ? ;`;
+  //   const values = [
+  //     request.body.content
+  //   ];
   
-    console.log(sqlQuery); // for debugging purposes:
-    dbConnection.query(sqlQuery, [...values, postid], (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Failed: Post was not edited." });
-      }
-      return response
-        .status(200)
-        .json({ Success: "Successful: Post was edited!." });
-    });
-  });
+  //   console.log(sqlQuery); // for debugging purposes:
+  //   dbConnection.query(sqlQuery, [...values, postid], (err, result) => {
+  //     if (err) {
+  //       return response
+  //         .status(400)
+  //         .json({ Error: "Failed: Post was not edited." });
+  //     }
+  //     return response
+  //       .status(200)
+  //       .json({ Success: "Successful: Post was edited!." });
+  //   });
+  // });
 
 
 
