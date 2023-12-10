@@ -446,3 +446,36 @@ header #search-bar {
 	background-color: var(--background-color-a);
 	border-radius: var(--border-radius-b);
 }
+
+.table {
+    display:flex;
+    flex-direction: column;
+
+    background-color: #333; /* Dark background */
+    color: white; /* White text */
+    width: 100%;
+    max-width: 600px; /* Adjust as necessary */
+    margin: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+  
+  .header {
+    background-color: #6C7AE0; /* Blue header */
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  .row {
+    display:flex;
+    justify-content: center;
+    padding: 15px;
+    border-bottom: 1px solid #474747; /* Slight border for rows */
+  }
+  
+  /* Last child row without bottom border */
+  .row:last-child {
+    border-bottom: none;
+  }
+  

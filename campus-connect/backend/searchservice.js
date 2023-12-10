@@ -23,38 +23,47 @@ var bodyParser = require("body-parser");
 // ----------------------------------------------
 var app = express(express.json);
 
-
-
-//WEBSERVICE : Search service
 // ----------------------------------------------
-// (1) create a search service that searches through posts
-// URI: http://localhost:port/search
-app.get("http://localhost:port/search", (request, response) => {
-    const searchTerm = request.query.term;
-    const sqlQuery = `
-        SELECT * 
-        FROM Posts 
-        WHERE Title LIKE '%${searchTerm}%' OR Content LIKE '%${searchTerm}%';
-    `;
-    
-    dbConnection.query(sqlQuery, (err, result) => {
-        if (err) {
-            return response
-                .status(400)
-                .json({ Error: "Error in the SQL statement. Please check." });
-        }
-        
-        response.setHeader("searchTerm", searchTerm);
-        return response.status(200).json(result);
+// (B)  Use the epxress cors middleware
+//      Cross-origin resource sharing (CORS)
+//      is a technique that restricts specified
+//      resources within web page to be accessed
+//      from other domains on which the origin
+//      resource was initiated the HTTP request
+//      Also use the bodyParser to parse in
+//      format the body of HTTP Requests
+// ----------------------------------------------
+app.use(cors());
+app.use(bodyParser.json());
+
+// Search the content of the all the posts in the database of their title and post content
+// ----------------------------------------------
+// (4) Get: Search posts title and content by keywords
+// URI: http://localhost:port/search/:keyword
+// ----------------------------------------------
+
+app.get("/search/:keyword", (req, res) => {
+    // Use placeholders in the query for security (to prevent SQL injection)
+    const searchQuery = "SELECT * FROM Posts WHERE Title LIKE ? OR Content LIKE ?";
+  
+    // Use "%" to denote that the keyword can be anywhere in the title or content
+    const keyword = `%${req.params.keyword}%`;
+  
+    // Execute the query
+    dbConnection.query(searchQuery, [keyword, keyword], (err, results) => {
+      if (err) {
+        // If there is an error, send a 500 status code (Internal Server Error)
+        console.error("Error searching for posts:", err);
+        return res.status(500).json({ Error: "Failed to search for posts." });
+      }
+  
+      // If everything is okay, send the results with a 200 status code (OK)
+      res.status(200).json(results);
     });
-});
+  });
+  
 
 
 
 
-
-
-
-
-
-module.exports=app;
+module.exports = app;

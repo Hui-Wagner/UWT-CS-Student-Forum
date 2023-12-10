@@ -7,6 +7,11 @@
 // Express API Reference:
 // https://expressjs.com/en/resources/middleware/cors.html
 
+
+//configure dotenv in main server file
+require('dotenv').config();
+
+
 // ----------------------------------------------
 // retrieve necessary files (express and cors)
 const express = require("express");
@@ -37,6 +42,12 @@ app.use(cors());
 app.use(bodyParser.json());
 
 
+// Mounting 'authservice' at '/api/auth' namespaces our authentication routes.
+// This avoids conflicts with similarly named routes in other services
+// and allows for easy extension and middleware integration specific to auth.
+const authservice = require("./authservice");
+app.use('/api/auth', authservice);
+
 //link to postsservice
 const postsservice = require("./postsservice");
 app.use(postsservice);
@@ -50,6 +61,26 @@ app.use(userservice);
 const replyservice = require("./replyservice");
 app.use(replyservice);
 
+
+//link to likedislikeservice
+const likedislikeservice = require("./likedislikeservice");
+app.use(likedislikeservice);
+
+//link to moderationservice
+const moderationservice = require("./moderationservice");
+app.use(moderationservice);
+
+//link to searchservice
+const searchservice = require("./searchservice");
+app.use(searchservice);
+
+//link to subforumservice
+const subforumservice = require("./subforumservice");
+app.use(subforumservice);
+
+//link to subservice
+const subservice = require("./subservice");
+app.use(subservice);
 
 
 

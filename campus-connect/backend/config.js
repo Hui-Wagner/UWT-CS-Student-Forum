@@ -7,6 +7,8 @@
 // https://github.com/mysqljs/mysql
 // ----------------------------------------------
 
+require('dotenv').config();
+
 // ----------------------------------------------
 // (A) Import the MySQL module or library
 // ----------------------------------------------
@@ -25,14 +27,16 @@ const mysql = require("mysql");
 // the testuser account. We are using  default 
 // tport hat is created by XAMPP for MySQL: 3306.
 // ----------------------------------------------
+
 const mysqlConfig = {
-    host: "localhost", 
-    port: 3306,
-    user: "testuser", 
-    password: "mypassword",
-    database: "campusconnect",
-    debug: true // Connection debugging mode is ON
-};
+    host: process.env.DB_HOST, 
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    debug: process.env.DB_DEBUG === 'true'
+}
+
 
 // ----------------------------------------------
 // (C) Establishing connection using the options
