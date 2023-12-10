@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Subforum</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        async function submitSubforum(event) {
+            event.preventDefault();
+            const subforumName = document.getElementById('subforumName').value.trim();
+            const subforumDesc = document.getElementById('subforumDesc').value.trim();
+
+            // Construct the subforum data
+            const subforumData = {
+                name: subforumName,
+                description: subforumDesc
+            };
+
+            try {
+                // Post the subforum data to the backend
+                const response = await fetch('http://localhost:3000/subforums', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // Include other headers like authentication tokens if needed
+                    },
+                    body: JSON.stringify(subforumData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Here, handle the response. You could redirect to the main page or clear the form
+                console.log('Subforum created successfully:', await response.json());
+                // Clear the form
+                document.getElementById('createSubforumForm').reset();
+                // Optionally, redirect back to the forum list or show a success message
+                alert('Subforum created successfully!');
+            } catch (error) {
+                console.error('There was a problem creating the subforum:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Create a New Subforum</h1>
+        <form id="createSubforumForm" onsubmit="submitSubforum(event)">
+            <div class="form-group">
+                <label for="subforumName">Subforum Name:</label>
+                <input type="text" id="subforumName" name="subforumName" required>
+            </div>
+            <div class="form-group">
+                <label for="subforumDesc">Description:</label>
+                <textarea id="subforumDesc" name="subforumDesc" rows="4" required></textarea>
+            </div>
+            <button type="submit">Create Subforum</button>
+        </form>
+    </div>
+</body>
+</html>
