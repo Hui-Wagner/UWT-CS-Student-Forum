@@ -92,45 +92,45 @@ app.get("/forums/:SubForumID", (req, res) => {
     });
   });
 
-// ----------------------------------------------
-// (3) Get: Get the content of a post and all its responses
-// **** This is used to show on the one particular post page ****
-// URI: http://localhost:port/posts/:PostID
-// ----------------------------------------------
+// // ----------------------------------------------
+// // (3) Get: Get the content of a post and all its responses
+// // **** This is used to show on the one particular post page ****
+// // URI: http://localhost:port/posts/:PostID
+// // ----------------------------------------------
 
-app.get("/posts/:PostID", (req, res) => {
-    console.log("Fetching post with ID:", req.params.PostID);
+// app.get("/posts/:PostID", (req, res) => {
+//     console.log("Fetching post with ID:", req.params.PostID);
   
-    const postQuery = "SELECT * FROM Posts WHERE PostID = ?";
-    dbConnection.query(postQuery, [req.params.PostID], (postErr, postResults) => {
-      if (postErr) {
-        console.error("Error fetching post:", postErr);
-        return res.status(500).json({ Error: "Failed to fetch the post." });
-      }
-      if (postResults.length === 0) {
-        return res.status(404).json({ Error: "Post not found." });
-      }
+//     const postQuery = "SELECT * FROM Posts WHERE PostID = ?";
+//     dbConnection.query(postQuery, [req.params.PostID], (postErr, postResults) => {
+//       if (postErr) {
+//         console.error("Error fetching post:", postErr);
+//         return res.status(500).json({ Error: "Failed to fetch the post." });
+//       }
+//       if (postResults.length === 0) {
+//         return res.status(404).json({ Error: "Post not found." });
+//       }
   
-      // If the post is found, proceed to fetch responses
-      fetchResponses(req.params.PostID, postResults[0], res);
-    });
-  });
+//       // If the post is found, proceed to fetch responses
+//       fetchResponses(req.params.PostID, postResults[0], res);
+//     });
+//   });
   
-  function fetchResponses(postID, post, res) {
-    const responsesQuery = "SELECT * FROM Responses WHERE PostID = ? ORDER BY ResponceDate"; // Make sure the column name is correct
-    dbConnection.query(responsesQuery, [postID], (responseErr, responseResults) => {
-      if (responseErr) {
-        console.error("Error fetching responses:", responseErr);
-        // Send back the post with an empty array for responses
-        responseResults = [];
-      }
+//   function fetchResponses(postID, post, res) {
+//     const responsesQuery = "SELECT * FROM Responses WHERE PostID = ? ORDER BY ResponceDate"; // Make sure the column name is correct
+//     dbConnection.query(responsesQuery, [postID], (responseErr, responseResults) => {
+//       if (responseErr) {
+//         console.error("Error fetching responses:", responseErr);
+//         // Send back the post with an empty array for responses
+//         responseResults = [];
+//       }
   
-      res.status(200).json({
-        Post: post,
-        Responses: responseResults
-      });
-    });
-  }
+//       res.status(200).json({
+//         Post: post,
+//         Responses: responseResults
+//       });
+//     });
+//   }
   
   
 
