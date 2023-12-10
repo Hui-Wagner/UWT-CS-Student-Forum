@@ -5,7 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum Topics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 </head>
+<header>
+    <div class="nav_bar">
+
+        <img src="../client/Assets/campus%20connect%20logo.JPG" id="logo" alt="Campus Connect Logo">
+
+
+        <a href="#">Home</a>
+
+        <div class="search_container">
+            <input type="text" placeholder="Search...">
+            <button type="submit">Search</button>
+        </div>
+
+        <button class="login" onclick="openLoginModal()">Login</button>
+
+        <button class="sign_up" onclick="openSignUpModal()">Sign Up</button>
+
+    </div>
+</header>
 
 <body>
 
@@ -37,21 +59,17 @@
 
 
 
-    <div class="nav_bar">
-
-        <img src="#" />
-
-        <a href="#">Home</a>
-
-        <div class="search_container">
-            <input type="text" placeholder="Search...">
-            <button type="submit">Search</button>
-        </div>
-
-        <button class="login" onclick="openLoginModal()">Login</button>
-
-        <button class="sign_up" onclick="openSignUpModal()">Sign Up</button>
-
+    
+    <div class="category_container">
+        <div class="category_title">Categories</div>
+        <ul class="category_list">
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Volunteer</a></li>
+            <li><a href="#">Job Hunting</a></li>
+            <li><a href="#">Fairs</a></li>
+            <li><a href="#">Major Announcements</a></li>
+            <li><a href="#">School Activities</a></li>
+        </ul>
     </div>
 
     <!-- Login Modal -->

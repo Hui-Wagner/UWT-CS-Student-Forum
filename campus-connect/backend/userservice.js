@@ -1,10 +1,7 @@
 // ----------------------------------------------
 // TCSS 460: Autumn 2023
 // Backend REST Service Module
-<<<<<<< HEAD
-=======
 // User Service
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
 // ----------------------------------------------
 // Express is a Node.js web application framework
 // that provides a wide range of APIs and methods
@@ -20,15 +17,6 @@ const dbConnection = require("./config");
 // use this library for parsing HTTP body requests
 var bodyParser = require("body-parser");
 
-<<<<<<< HEAD
-// ----------------------------------------------
-// (A)  Create an express application instance
-//      and parses incoming requests with JSON
-//      payloads
-// ----------------------------------------------
-var app = express(express.json);
-
-=======
 var app = express(express.json);
 
 app.use(cors());
@@ -38,7 +26,6 @@ app.use(bodyParser.json());
 // Import the authentication middleware
 const { authenticateJWT, authorizeRole } = require('./authMiddleware');
 const { JsonWebTokenError } = require("jsonwebtoken");
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
 
 //WEBSERVICE #1: User Management Service
 // Methods:
@@ -51,22 +38,10 @@ const { JsonWebTokenError } = require("jsonwebtoken");
 // (1) create a new user
 // Note: user id is auto incremented so there is no need to pass
 // a value for the id attribute
-<<<<<<< HEAD
-// URI: http://localhost:port/users/:username
-app.post("/users/:username", (request, response) => {
-    const sqlQuery = "INSERT INTO users (username, userpassword, email, usertype) VALUES (?);";
-    const values = [
-      request.body.username,
-      request.body.userpassword,
-      request.body.email,
-      request.body.usertype
-    ];
-=======
 // URI: http://localhost:port/campus-connect/users
 app.post("/campus-connect/users", (request, response) => {
     const sqlQuery = "INSERT INTO users (username, userpassword, email, usertype) VALUES (?);";
     
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
   
     dbConnection.query(sqlQuery, [values], (err, result) => {
       if (err) {
@@ -82,12 +57,6 @@ app.post("/campus-connect/users", (request, response) => {
   
   // ----------------------------------------------
   // (2) retrieve info for a specific user
-<<<<<<< HEAD
-  // root URI: http://localhost:port/users/:username
-  app.get("/users/:username", (request, response) => {
-    const userName = request.params.username;
-    const sqlQuery = "SELECT * FROM users WHERE username = '" + userName + "';";
-=======
   // root URI: http://localhost:port/campus-connect/users/id/:userID
   // can be used to get the username for a user id
   // do not want to expose users sensitive information!!
@@ -132,7 +101,6 @@ app.post("/campus-connect/users", (request, response) => {
   app.get("/campus-connect/users/username/:userName", (request, response) => {
     const userName = request.params.userName;
     const sqlQuery = "SELECT COUNT(*) as 'total' FROM users WHERE username = '" + userName + "';";
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
     dbConnection.query(sqlQuery, (err, result) => {
       if (err) {
         return response
@@ -143,26 +111,6 @@ app.post("/campus-connect/users", (request, response) => {
       return response.status(200).json(result);
     });
   });
-<<<<<<< HEAD
-  
-  // ----------------------------------------------
-  // (3) update the info for a user(update of id is not permitted )
-  // city URI: http://localhost:port/users/:username
-  app.put("/users/:username", (request, response) => {
-    const userName = request.params.username;
-    
-    const sqlQuery = `UPDATE users SET username = ?, 
-      email = ?, userpassword = ?
-      WHERE username = ? ;`;
-    const values = [
-      request.body.username,
-      request.body.email,
-      request.body.userpassword
-    ];
-  
-    console.log(sqlQuery); // for debugging purposes:
-    dbConnection.query(sqlQuery, [...values, userName], (err, result) => {
-=======
 
   // ----------------------------------------------
   // (5) update the info for a user(update of id is not permitted )
@@ -226,7 +174,6 @@ app.post("/campus-connect/users", (request, response) => {
   
     console.log(sqlQuery); // for debugging purposes:
     dbConnection.query(sqlQuery, [...values, userId], (err, result) => {
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
       if (err) {
         return response
           .status(400)
@@ -239,16 +186,6 @@ app.post("/campus-connect/users", (request, response) => {
   });
   
   // ----------------------------------------------
-<<<<<<< HEAD
-  // (4) Delete a user by user name
-  // note: deletion is by userName, it is important that no duplicate usernames are allowed
-  // make sure we designate username to be unique in database
-  // city URI: http://localhost:port/users/:username
-  app.delete("/users/:username", (request, response) => {
-    const userName = request.params.username;
-    const sqlQuery = "DELETE FROM users WHERE username = ? ; ";
-    dbConnection.query(sqlQuery, albumName, (err, result) => {
-=======
   // (7) Delete a user by user name, only user can use this one(to delete their own account)
   // note: deletion is by userName, it is important that no duplicate usernames are allowed
   // might run into issues while user is signed in, further testing is needed
@@ -277,7 +214,6 @@ app.post("/campus-connect/users", (request, response) => {
     const userName = request.params.username;
     const sqlQuery = "DELETE FROM users WHERE userName = ?;";
     dbConnection.query(sqlQuery, userName, (err, result) => {
->>>>>>> b11e81e8824163f8eb7be9909e41863075fcd2f2
       if (err) {
         return response
           .status(400)

@@ -468,6 +468,7 @@ header #search-bar {
   }
   
   .row {
+    display:none;
     display:flex;
     justify-content: center;
     padding: 15px;
@@ -479,3 +480,6 @@ header #search-bar {
     border-bottom: none;
   }
   
+  .row:hover{
+    background-color: #2c2d39;
+  }
