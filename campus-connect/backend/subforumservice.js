@@ -36,6 +36,9 @@ var app = express(express.json);
 app.use(cors());
 app.use(bodyParser.json());
 
+// Import the authentication middleware
+const { authenticateJWT, authorizeRole } = require('./authMiddleware');
+const { JsonWebTokenError } = require("jsonwebtoken");
 // ----------------------------------------------
 // (1) Get: Get the forums list from the database
 // ****This is used to show on the home/main page ****
@@ -63,7 +66,7 @@ app.get("/forums", (req, res) => {
 // URI: http://localhost:port/forums/:SubForumID
 // ----------------------------------------------
 
-app.get("/forums/:SubForumID", (req, res) => {
+app.get("/forums/posts/:SubForumID", (req, res) => {
     // SQL Query to select all posts from the database where the SubForumID matches
     const sqlQuery = "SELECT * FROM Posts WHERE SubForumID = ?";
   
@@ -92,45 +95,138 @@ app.get("/forums/:SubForumID", (req, res) => {
     });
   });
 
-// // ----------------------------------------------
-// // (3) Get: Get the content of a post and all its responses
-// // **** This is used to show on the one particular post page ****
-// // URI: http://localhost:port/posts/:PostID
-// // ----------------------------------------------
+  // ----------------------------------------------
+  // (3) retrive the information on a specific subforum
+  // root URI: http://localhost:port/forums/:SubForumID
+  // no auth required
+  app.get("/forums/:SubForumID", (request, response) => {
+    const subForumId = request.params.SubForumID;
+    const sqlQuery = "SELECT * FROM subforums WHERE subforumid = '" + subForumId + "';";
+    dbConnection.query(sqlQuery, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Error in the SQL statement. Please check." });
+      }
+      response.setHeader("SubForumID", subForumId); // send a custom
+      return response.status(200).json(result);
+    });
+  });
 
-// app.get("/posts/:PostID", (req, res) => {
-//     console.log("Fetching post with ID:", req.params.PostID);
+  // ----------------------------------------------
+  // (4) create a new subforum
+  // root URI: http://localhost:port//campus-connect/posts
+  // no auth required
+  app.post("/forums", authenticateJWT, authorizeRole([1,2]), (request, response) => {
+
+    // Insert sql statement
+    const sqlQuery = "INSERT INTO subforums (name, description, creatorid) VALUES (?, ?, ?);";
+    const values = [
+      request.body.name,
+      request.body.description,
+      request.user.userId, // Use userId from JWT
+    ];
   
-//     const postQuery = "SELECT * FROM Posts WHERE PostID = ?";
-//     dbConnection.query(postQuery, [req.params.PostID], (postErr, postResults) => {
-//       if (postErr) {
-//         console.error("Error fetching post:", postErr);
-//         return res.status(500).json({ Error: "Failed to fetch the post." });
-//       }
-//       if (postResults.length === 0) {
-//         return res.status(404).json({ Error: "Post not found." });
-//       }
+    dbConnection.query(sqlQuery, values, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: subforum was not added." });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Successful: subforum was added!", SubForumID: result.insertId });
+    });
+  });
+
+  // ----------------------------------------------
+  // (5) update the info for a subforum
+  // URI: http://localhost:port/forums/:SubForumID
+  app.put("/forums/:SubForumID",authenticateJWT, authorizeRole([1,2]), async (request, response) => {
+    const subForumId = request.params.SubForumID;
+    
+    
+    //authenticate that the user made this subforum
+    url = `http://localhost:3000/forums/${subForumId}` //need to create this
+    let replyResponse = await fetch(url, {
+        method:'GET'
+    })
+
+    //retreive user id for creator
+    let replyData = await replyResponse.json()
+    console.log(replyData);
+    let reply = replyData[0];
+    let creatorId = reply["CreatorID"];
+
+    //check to see if userid matches to logged in user
+    if(creatorId != request.user.userId){
+      return response
+        .status(401)
+        .json({ Error: "Unauthorized: invalid user" });
+    }
+    
+    //perform update
+    const sqlQuery = `UPDATE subforums SET name = ?, description = ?
+      WHERE subforumid = ? ;`;
+    const values = [
+      request.body.name,
+      request.body.description
+    ];
   
-//       // If the post is found, proceed to fetch responses
-//       fetchResponses(req.params.PostID, postResults[0], res);
-//     });
-//   });
-  
-//   function fetchResponses(postID, post, res) {
-//     const responsesQuery = "SELECT * FROM Responses WHERE PostID = ? ORDER BY ResponceDate"; // Make sure the column name is correct
-//     dbConnection.query(responsesQuery, [postID], (responseErr, responseResults) => {
-//       if (responseErr) {
-//         console.error("Error fetching responses:", responseErr);
-//         // Send back the post with an empty array for responses
-//         responseResults = [];
-//       }
-  
-//       res.status(200).json({
-//         Post: post,
-//         Responses: responseResults
-//       });
-//     });
-//   }
+    //console.log(sqlQuery); // for debugging purposes:
+    dbConnection.query(sqlQuery, [...values, subForumId], (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: Subforum was not edited." });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Successful: Subforum was edited!." });
+    });
+  });
+
+  // ----------------------------------------------
+  // (6) Delete a subforum by its id
+  //only original post creator whould allowed to delete the post
+  app.delete("/forums/:SubForumID",authenticateJWT, authorizeRole([1,2]), async (request, response) => {
+    const subForumId = request.params.SubForumID;
+
+    //If user is not an admin then check to see if they created the post
+    if(request.user.role == 1){
+      //authenticate that the user made this subforum
+      url = `http://localhost:3000/forums/${subForumId}` //need to create this
+      let replyResponse = await fetch(url, {
+          method:'GET'
+      })
+
+      //retreive user id for creator
+      let replyData = await replyResponse.json();
+      let reply = replyData[0];
+      console.log("asdasdasdasds")
+      let creatorId = reply["CreatorID"];
+
+      //check to see if userid matches to logged in user
+      if(creatorId != request.user.userId){
+        return response
+          .status(401)
+          .json({ Error: "Unauthorized: invalid user" });
+      }
+    }
+    
+    //proceed with deletion
+    const sqlQuery = "DELETE FROM subforums WHERE subforumid = ? ; ";
+    dbConnection.query(sqlQuery, subForumId, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: subforum was not deleted" });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Succcessful: subforum was deleted!" });
+    });
+  });
   
   
 
