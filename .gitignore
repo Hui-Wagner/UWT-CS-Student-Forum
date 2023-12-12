@@ -1,5 +1,6 @@
 campus-connect/backend/.DS_Store
 .DS_Store
+campus-connect/backend/node_modules/
 campus-connect/backend/node_modules/.package-lock.json
 campus-connect/backend/node_modules/.bin/mime
 campus-connect/backend/node_modules/.bin/nodemon

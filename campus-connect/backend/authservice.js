@@ -42,6 +42,46 @@ router.post('/login', (req, res) => {
     });
 });
 
+ /**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authorization Webservice
+ *
+ * /api/auth/login:
+ *   post:
+ *     summary: Create a new post
+ *     description: Creates a new post in the database.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               UserName:
+ *                 type: string
+ *                 example: "blex49"
+ *               UserPassword:
+ *                 type: string
+ *                 example: "1234"
+ *             required:
+ *               - UserName
+ *               - UserPassword
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Message: "Login successful"
+ *               token: "generated jwt token"
+ *       '401':
+ *         description: Failed database authentication response
+ *       '500':
+ *         description: Database Error 
+ */
 // Export the router so it can be used in the main server file (index.js)
 module.exports = router;
 

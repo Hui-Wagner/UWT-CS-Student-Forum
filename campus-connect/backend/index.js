@@ -41,6 +41,35 @@ var app = express(express.json);
 app.use(cors());
 app.use(bodyParser.json());
 
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Your API',
+      version: '1.0.0',
+    },
+    servers:[
+      {
+      url: 'http://localhost:3000',
+      },
+    ],
+  },
+  apis: ['userservice.js', 
+  'postsservice.js', 
+  'replyservice.js', 
+  'searchservice.js', 
+  'subforumservice.js', 
+  'authservice.js', 
+  'likedislikeservice.js',
+  'moderationservice.js'], // Path to your route files
+};
+
+const specs = swaggerJsdoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Mounting 'authservice' at '/api/auth' namespaces our authentication routes.
 // This avoids conflicts with similarly named routes in other services
