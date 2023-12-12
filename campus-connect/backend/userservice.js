@@ -42,7 +42,12 @@ const { JsonWebTokenError } = require("jsonwebtoken");
 app.post("/campus-connect/users", (request, response) => {
     const sqlQuery = "INSERT INTO users (username, userpassword, email, usertype) VALUES (?);";
     
-  
+    values = [
+      request.body.username,
+      request.body.userpassword,
+      request.body.email,
+      request.body.usertype
+    ]
     dbConnection.query(sqlQuery, [values], (err, result) => {
       if (err) {
         return response
@@ -225,6 +230,69 @@ app.post("/campus-connect/users", (request, response) => {
     });
   });
   
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: User Webservice
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Response:
+ *       type: object
+ *       properties:
+ *         ResponseID:
+ *           type: integer
+ *         PostID:
+ *           type: integer
+ *         UserID:
+ *           type: integer
+ *         Content:
+ *           type: string
+ *         ResponceDate:
+ *           type: string
+ */
 
-
+/**
+ * @swagger
+ * /campus-connect/users:
+ *   post:
+ *     summary: create a new user for the website
+ *     description: can be used for account creation
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "username"
+ *               userpassword:
+ *                 type: string
+ *                 example: "password"
+ *               email:
+ *                 type: string
+ *                 example: "email"
+ *               usertype:
+ *                 type: string
+ *                 example: "1"
+ *             required:
+ *               - content
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: User was added!"
+ *       '400':
+ *         description: Failed response
+ */
 module.exports = app;
