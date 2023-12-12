@@ -36,6 +36,60 @@ var app = express(express.json);
 app.use(cors());
 app.use(bodyParser.json());
 
+/**
+ * @swagger
+ * tags:
+ *   name: Search
+ *   description: Search Webservice
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         postid:
+ *           type: integer
+ *         SubForumId:
+ *           type: integer
+ *         UserId:
+ *           type: integer
+ *         Title:
+ *           type: string
+ *         Content:
+ *           type: string
+ *         PostDate:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /search/{keyword}:
+ *   get:
+ *     tags: [Search]
+ *     summary:  Search the content of the all the posts in the database of their title and post content
+ *     description: 
+ *       Search posts title and content by keywords
+ *     parameters:
+ *       - in: path
+ *         name: keyword
+ *         required: true
+ *         description: keyword to be searched for 
+ *         type: string
+ *         example: "tcss"
+ *     responses:
+ *       '200':
+ *         description: Success, returns an array of posts as objects
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'                  
+ *       '500':
+ *         description: database error
+ */
 // Search the content of the all the posts in the database of their title and post content
 // ----------------------------------------------
 // (4) Get: Search posts title and content by keywords

@@ -92,6 +92,73 @@ app.patch("/posts/downvote/:PostID", authenticateJWT, (request, response) => {
     });
   });
 
+/**
+ * @swagger
+ * tags:
+ *   name: Upvote
+ *   description: Like/Dislike Service
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
+/**
+ * @swagger
+ * /posts/upvote/{PostID}:
+ *   patch:
+ *     tags: [Upvote]
+ *     summary: increment number of Upvotes for a specific post
+ *     description: upvote a post
+ *     parameters:
+ *       - in: path
+ *         name: PostID
+ *         required: true
+ *         description: id of the post.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Upvote incremented successfully."
+ *       '404':
+ *         description: Post-not-Found response
+ *       '500':
+ *         description: Database error
+ */
+
+/**
+ * @swagger
+ * /posts/downvote/{PostID}:
+ *   patch:
+ *     tags: [Upvote]
+ *     summary: decrement number of Upvotes for a specific post
+ *     description: downvote a post
+ *     parameters:
+ *       - in: path
+ *         name: PostID
+ *         required: true
+ *         description: id of the post.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "downvote reduced successfully."
+ *       '404':
+ *         description: Post-not-Found response
+ *       '500':
+ *         description: Database error
+ */
 
 module.exports = app;

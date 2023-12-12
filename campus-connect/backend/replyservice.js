@@ -27,7 +27,6 @@ const { authenticateJWT, authorizeRole } = require("./authMiddleware");
 var app = express(express.json);
 
 
-
 // ----------------------------------------------
 // (1) create a reply for a post
 // URI: http://localhost:port/campus-connect/replies/:postid
@@ -52,7 +51,6 @@ app.post("/campus-connect/replies/:postid", authenticateJWT, authorizeRole([1,2,
         .json({ Success: "Successful: reply was added!." });
     });
   });
-  
   
   // ----------------------------------------------
   // (2) retrieve all replies for a post sorted by time created
@@ -167,13 +165,194 @@ app.post("/campus-connect/replies/:postid", authenticateJWT, authorizeRole([1,2,
       if (err) {
         return response
           .status(400)
-          .json({ Error: "Failed: post was not deleted" });
+          .json({ Error: "Failed: Reply was not deleted" });
       }
       return response
         .status(200)
-        .json({ Success: "Succcessful: post was deleted!" });
+        .json({ Success: "Succcessful: Reply was deleted!" });
     });
   });
 
+//swagger doc comments
+/**
+ * @swagger
+ * tags:
+ *   name: Reply
+ *   description: Reply Webservice
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Response:
+ *       type: object
+ *       properties:
+ *         ResponseID:
+ *           type: integer
+ *         PostID:
+ *           type: integer
+ *         UserID:
+ *           type: integer
+ *         Content:
+ *           type: string
+ *         ResponceDate:
+ *           type: string
+ */
 
+/**
+ * @swagger
+ * /campus-connect/replies/{postid}:
+ *   post:
+ *     summary: create a reply for a post
+ *     description: creates a new response in the database(reply to a post)
+ *     tags: [Reply]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postid
+ *         required: true
+ *         description: ID of the post to reply to
+ *         type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: "wow that was great!"
+ *             required:
+ *               - content
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: reply was added!"
+ *       '400':
+ *         description: Failed response
+ */
+
+  /**
+ * @swagger
+ * /campus-connect/replies/{postid}:
+ *   get:
+ *     tags: [Reply]
+ *     summary: Retrieve all replies for a post
+ *     description: 
+ *       Retrieves responses for a specific post in database.
+ *     parameters:
+ *       - in: path
+ *         name: postid
+ *         required: true
+ *         description: ID of the post 
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Response' 
+ *                 
+ *       '400':
+ *         description: Failed response in case of an error
+ */
+
+/**
+ * @swagger
+ * /campus-connect/replies/single/{replyid}:
+ *   get:
+ *     tags: [Reply]
+ *     summary: Retrieve a singular reply/response but its id
+ *     description: 
+ *       Retrieves a specific response in database.
+ *     parameters:
+ *       - in: path
+ *         name: replyid
+ *         required: true
+ *         description: ID of the reply 
+ *         type: string
+ *         example: "1"
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Response'                  
+ *       '400':
+ *         description: Failed response in case of an error
+ */
+
+  /**
+ * @swagger
+ * /campus-connect/replies/edit/{replyid}:
+ *   put:
+ *     tags: [Reply]
+ *     summary: Update reply content, can use to allow users to edit responses/replies
+ *     description: can be used to edit a reply to a post
+ *     parameters:
+ *       - in: path
+ *         name: replyid
+ *         required: true
+ *         description: id of the reply to update.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: Reply was edited!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized response
+ */
+
+  /**
+ * @swagger
+ * /campus-connect/replies/single/{replyid}:
+ *   delete:
+ *     tags: [Reply]
+ *     summary: Delete a reply by reply ID
+ *     description: Deletes a response/reply from the database. Only the original creator or an admin is allowed to delete.
+ *     parameters:
+ *       - in: path
+ *         name: replyid
+ *         required: true
+ *         description: ID of the response(reply) to delete.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: Reply was deleted!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized error response
+ */
   module.exports = app;
