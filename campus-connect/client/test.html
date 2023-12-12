@@ -1,179 +1,424 @@
-// ----------------------------------------------
-// TCSS 460: Autumn 2023
-// reply service
-// Backend REST Service Module
-// ----------------------------------------------
-// Express is a Node.js web application framework
-// that provides a wide range of APIs and methods
-// Express API Reference:
-// https://expressjs.com/en/resources/middleware/cors.html
+<!DOCTYPE html>
+<html lang="en">
 
-// ----------------------------------------------
-// retrieve necessary files (express and cors)
-const express = require("express");
-const cors = require("cors");
-
-// retrieve the MySQL DB Configuration Module
-const dbConnection = require("./config");
-// use this library for parsing HTTP body requests
-var bodyParser = require("body-parser");
-const { authenticateJWT, authorizeRole } = require("./authMiddleware");
-
-// ----------------------------------------------
-// (A)  Create an express application instance
-//      and parses incoming requests with JSON
-//      payloads
-// ----------------------------------------------
-var app = express(express.json);
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Topics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://kit.fontawesome.com/c34d03d296.js" crossorigin="anonymous"></script>
 
 
+</head>
+<header>
+    <div class="nav_bar">
 
-// ----------------------------------------------
-// (1) create a reply for a post
-// URI: http://localhost:port/campus-connect/replies/:postid
-app.post("/campus-connect/replies/:postid", authenticateJWT, authorizeRole([1,2,3]), (request, response) => {
-    let postid = request.params.postid
-    const sqlQuery = "INSERT INTO responses (postid, userid, content, responcedate) VALUES (?);";
-    const values = [
-      postid,
-      request.user.userId,
-      request.body.content,
-      new Date() //current time
-    ];
-  
-    dbConnection.query(sqlQuery, [values], (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Failed: reply was not added." });
-      }
-      return response
-        .status(200)
-        .json({ Success: "Successful: reply was added!." });
-    });
-  });
-  
-  
-  // ----------------------------------------------
-  // (2) retrieve all replies for a post sorted by time created
-  // root URI: http://localhost:port/campus-connect/replies/:postid
-  app.get("/campus-connect/replies/:postid", (request, response) => {
-    const postId = request.params.postid;
-    const sqlQuery = "SELECT * FROM responses WHERE postid = '" + postId + "' ORDER BY responcedate ASC;";
-    dbConnection.query(sqlQuery, (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Error in the SQL statement. Please check." });
-      }
-      response.setHeader("postId", postId); // send a custom
-      return response.status(200).json(result);
-    });
-  });
-  
-  // ----------------------------------------------
-  // (3) retrieve info for a specific reply/response
-  // root URI: http://localhost:port/campus-connect/replies/single/:replyid
-  app.get("/campus-connect/replies/single/:replyid", (request, response) => {
-    const replyId = request.params.replyid;
-    const sqlQuery = "SELECT * FROM responses WHERE responseid = '" + replyId + "' ORDER BY responcedate ASC;";
-    dbConnection.query(sqlQuery, (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Error in the SQL statement. Please check." });
-      }
-      response.setHeader("replyid", replyId); // send a custom
-      return response.status(200).json(result);
-    });
-  });
+        <img src="../client/Assets/campus%20connect%20logo.JPG" id="logo" alt="Campus Connect Logo">
+        <h1 id="page-title">Campus Connect</h1>
 
-  // ----------------------------------------------
-  // (4) update the info for a reply
-  // URI: http://localhost:port/campus-connect/replies/edit/:replyid
-  app.put("/campus-connect/replies/edit/:replyid",authenticateJWT, authorizeRole([1]), async (request, response) => {
-    const replyId = request.params.replyid;
+
+        <a href="#">Home</a>
+
+        <div class="search_container">
+            <input type="text" placeholder="Search...">
+            <button type="submit" >Search</button>
+        </div>
+
+        <button class="login_button"  onclick="openLoginModal()">Login</button>
+
+        <button class="signup_button" onclick="openSignUpModal()">Sign Up</button>
+
+    </div>
+</header>
+
+<body>
+
+    <script>
+      $(document).ready(function () {
+    $(".test").hide();
+    $('.SubforumPage').hide(); // Corrected the selector for SubforumPage
+    //$(".Main-Container").hide();
+    $('.ReplyPage').hide();
+    fetchHomePageForumsData();
     
-    
-    //authenticate that the user made this post
-    url = `http://localhost:3000/campus-connect/replies/single/${replyId}`
-    let replyResponse = await fetch(url, {
-        method:'GET'
-    })
+    $(document).on('click', '.subforum', function () {
+        $(".Main-Container").hide();
+        
+        const subforumID = $(this).data('subforum-id');
+        const subforumName = $(this).find('h4').text();
+        getSubforumDetailsAndPosts(subforumID, subforumName);
+        $('.SubforumPage').show();
+    });
 
-    //retreive user id for creator
-    let replyData = await replyResponse.json()
-    let reply = replyData[0]
-    let creatorId = reply["UserID"]
+    $(document).on('click', '.post', function () {
+        $(".SubforumPage").hide();
+        
+        const PostID = $(this).data('post-id');
+        const PostTitle = $(this).find('h3').text();
+        $('.Post').find('h2').text();
+        fetchRepliesForPost(PostID, PostTitle);
+        $('.ReplyPage').show();
+    });
+});
+///////////////////////////////////////////////////////////////////////////
+//Home Page Methods
+function fetchHomePageForumsData() {
+    var iconClasses = ['fa-solid fa-w','fa-solid fa-terminal','fa-solid fa-calculator','fa-solid fa-music',"fa-solid fa-flask","fa-solid fa-book","fa-solid fa-medical", "fa-solid fa-plane", "fa-solid fa-bowl-food", "fa-solid fa-film"];
+    // Make an AJAX request to fetch forum data
+    $.ajax({
+        url: 'http://localhost:3000/forums',
+        method: 'GET',
+        success: function (data) {
+            // On success, iterate through the data and add subforums to the subforums container
+            data.forEach(function (forum, index) {
+                // Get the corresponding icon class or use a default if the array is not long enough
+                var iconClass = iconClasses[index] || 'fas fa-question';
 
-    //check to see if userid matches to logged in user
-    if(creatorId != request.user.userId){
-      return response
-        .status(401)
-        .json({ Error: "Unauthorized: invalid user" });
+                // Create a new subforum element
+                var newSubforum = $('<div class="subforum" data-subforum-id="' + forum.SubForumID + '"><i class="' + iconClass + '"></i><h4>' + forum.Name + '</h4></div>');                // Append the new subforum to the subforums container
+                $(".subforums").append(newSubforum);
+            });
+        },
+        error: function () {
+            // Handle error
+            console.error('Failed to fetch forum data.');
+        }
+    });
+}
+///////////////////////////////////////////////////////////////////////////
+//SubForum Page Methods
+// Function to get subforum details and posts based on SubForumID
+function getSubforumDetailsAndPosts(subforumID,subforumName) {
+    $.ajax({
+        url: `http://localhost:3000/forums/${subforumID}`,
+        method: 'GET',
+        success: function (data) {
+            // Update the UI with subforum title and posts
+            console.log('Subforum Details and Posts:', data);
+            updateSubforumPageUI(data,subforumName); // Implement this function to update UI
+        },
+        error: function (error) {
+            console.error('Failed to fetch subforum details and posts:', error.responseJSON);
+            // Handle errors or show a user-friendly message
+        }
+    });
+}
+// Function to update the SubforumPage UI with subforum title and posts
+function updateSubforumPageUI(subforumData,subforumName) {
+    console.log('Updating Subforum Page UI');
+    console.log('Subforum Data:', subforumData);
+    // display subforum title and posts
+    const titleElement = $('.SubforumPage .Title h2');
+    const postsContainer = $('.SubforumPage .Posts');
+
+    // Update subforum title
+    titleElement.html(subforumName);
+
+    // Clear existing posts
+    postsContainer.empty();
+
+    // Loop through the posts and append them to the container
+    subforumData.forEach(function (post) {
+        const postHTML = `<div class="post">
+                             <div class="post-content" data-post-id="' + ${post.PostID} + '">
+                                 <h3>${post.Title}</h3>
+                                 <p>${post.Content}</p>
+                             </div>
+                             <div class="post-actions">
+                                 <button class="reply-button">Reply</button>
+                                 <div class="vote-section">
+                                     <i class="fas fa-arrow-up"></i>
+                                     <span class="vote-count">${post.UpVotes}</span>
+                                     <i class="fas fa-arrow-down"></i>
+                                 </div>
+                             </div>
+                         </div>`;
+        postsContainer.append(postHTML);
+    });
+}
+
+
+
+function fetchPosts(){
+    $.ajax({
+        url: http//:localhost:3000/
+    });
+}
+
+        // JavaScript to handle opening and closing modals
+        function openLoginModal() {
+          document.getElementById('loginModal').style.display = 'block';
+        }
+        
+        function closeLoginModal() {
+          document.getElementById('loginModal').style.display = 'none';
+        }
+        
+        function openSignUpModal() {
+          document.getElementById('signUpModal').style.display = 'block';
+        }
+        
+        function closeSignUpModal() {
+          document.getElementById('signUpModal').style.display = 'none';
+        }
+        
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+          if (event.target.className === 'modal') {
+            event.target.style.display = "none";
+          }
+        }
+
+
+
+///////////////////////////////////////////////////////////////////////////
+//Post and Reply Section
+function fetchRepliesForPost(postId, PostTitle) {
+    $.ajax({
+        url: `http://localhost:3000/campus-connect/replies/${postId}`,
+        method: 'GET',
+        success: function (data) {
+            // Handle the retrieved replies data (replace this with your logic)
+            console.log('Replies for Post ID:', postId, data);
+            displayReplies(data, PostTitle); // Implement this function to display replies
+        },
+        error: function (error) {
+            console.error('Failed to fetch replies for post:', error.responseJSON);
+            // Handle errors or show a user-friendly message
+        }
+    });
+}
+
+function displayReplies(replies, PostTitle) {
+    // display replies
+    const repliesContainer = $('.Replies');
+
+    // Clear existing replies
+    repliesContainer.empty();
+
+    // Loop through the replies and append them to the container
+    replies.forEach(function (reply) {
+        const replyHTML = `<div class="Reply">
+                               <div class="ReplyContent">${reply.Content}</div>
+                               <div class="ReplyInfo">${reply.UserID} - ${reply.ResponceDate}</div>
+                               <button class="EditButton" data-responceid="${reply.ResponceID}">Edit</button>
+                           </div>`;
+        repliesContainer.append(replyHTML);
+    });
+
+    // Attach click event to edit buttons
+    $('.EditButton').click(function () {
+        const responceId = $(this).data('responceid');
+        // Implement logic to handle editing for the corresponding reply
+        editReply(responceId);
+    });
+
+    function editReply(responceId) {
+    // Assuming you have a way to get the edited content (replace this with your logic)
+    const editedContent = prompt('Enter edited content:');
+
+    // Check if the user clicked "Cancel"
+    if (editedContent === null) {
+        return;
     }
-    
-    //perform update
-    const sqlQuery = `UPDATE responses SET content = ?
-      WHERE responseid = ? ;`;
-    const values = [
-      request.body.content
-    ];
-  
-    console.log(sqlQuery); // for debugging purposes:
-    dbConnection.query(sqlQuery, [...values, replyId], (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Failed: Reply was not edited." });
-      }
-      return response
-        .status(200)
-        .json({ Success: "Successful: Reply was edited!." });
+
+    // Make an AJAX request to update the reply
+    $.ajax({
+        url: `http://localhost:port/posts/${postId}/responce/${responceId}`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ content: editedContent }),
+        success: function (data) {
+            // Handle the success response (replace this with your logic)
+            console.log('Reply edited successfully:', data);
+            // Refresh the replies after editing
+            fetchRepliesForPost(postId);
+        },
+        error: function (error) {
+            console.error('Failed to edit reply:', error.responseJSON);
+            // Handle errors or show a user-friendly message
+        }
     });
-  });
-  
-  // ----------------------------------------------
-  // (5) Delete a post by post id
-  // URI: http://localhost:port/campus-connect/replies/single/:replyid
-  app.delete("/campus-connect/replies/single/:replyid",authenticateJWT, authorizeRole([1,2]), async (request, response) => {
-    const replyId = request.params.replyid;
+}
 
-    //If user is not an admin then check to see if they created the post
-    if(request.user.role == 1){
-      //If user is not an admin then check to see if they created the post
-      //retrieve the post info to check who created the post
-      url = `http://localhost:3000/campus-connect/replies/single/${replyId}`
-      let replyResponse = await fetch(url, {
-          method:'GET'
-      })
+}
+    </script>
+     <!-- Displays Main Page -->
+    <div class = "Main-Container">
+        <div id="Welcome-Banner">
+            <h1>Welcome!</h1>
+            <h3>Campus Connect: A forum to keep you up to date with your school</h3>
+            <h3>Take a look around</h3>
+        </div>
 
-      //retrieve user id for creator
-      let replyData = await replyResponse.json()
-      let reply = replyData[0]
-      let creatorId = reply["UserID"]
+        <div class = "subforums">
 
-      //check to see if userid matches to logged in user
-      if(creatorId != request.user.userId){
-        return response
-          .status(401)
-          .json({ Error: "Unauthorized: invalid user" });
-      }
-    }
+        </div>
+
+
+
+
+
+
+
+    </div>
+     <!-- Displays SubForum Page -->
+    <div class="SubforumPage">
+
+        <!-- Subforum Title -->
+        <div class="Title">
+            <h2></h2>
+        </div>
     
-    //proceed with deletion
-    const sqlQuery = "DELETE FROM responses WHERE responseid = ? ; ";
-    dbConnection.query(sqlQuery, replyId, (err, result) => {
-      if (err) {
-        return response
-          .status(400)
-          .json({ Error: "Failed: post was not deleted" });
-      }
-      return response
-        .status(200)
-        .json({ Success: "Succcessful: post was deleted!" });
-    });
-  });
+        <!-- Posts Section -->
+        <div class="Posts">
+    
+            <!-- Post 1 -->
+            <div class="post">
+                <div class="post-content">
+                    <h3>Post Title 1</h3>
+                    <p>This is the content of the post.</p>
+                </div>
+                <div class="post-actions">
+                    <button class="reply-button">Reply</button>
+                    <div class="vote-section">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="vote-count">42</span>
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Post 2 -->
+            <div class="post">
+                <div class="post-content">
+                    <h3>Post Title 2</h3>
+                    <p>This is another post's content.</p>
+                </div>
+                <div class="post-actions">
+                    <button class="reply-button">Reply</button>
+                    <div class="vote-section">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="vote-count">18</span>
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Add more posts as needed -->
+    
+        </div>
+    
+    </div>
+    <!-- Displays Reply Page -->
+    <div class="ReplyPage">
+        <div class="Post">
+            <h2>Post Title</h2>
+            <p>Post Content goes here. It can be a longer text describing the post.</p>
+            <div class="VoteSection">
+                <div class="VoteButton">▲</div>
+                <div class="VoteButton">▼</div>
+                <span>Post Date - 10 Replies</span>
+            </div>
+        </div>
+    
+        <div class="MakeReply">
+            <textarea class="ReplyTextArea" placeholder="Write your reply..."></textarea>
+            <button class="SubmitButton">Submit Reply</button>
+        </div>
+    
+        <div class="Replies">
+            <div class="Reply">
+                <div class="ReplyContent">Reply Content goes here.</div>
+                <div class="ReplyInfo">Username - Reply Date</div>
+            </div>
+    
+            <!-- Additional replies can be added here dynamically -->
+        </div>
+    </div>
 
+    <div class = "test">
+    <div class="category_container">
+        <div class="category_title">Categories</div>
+        <ul class="category_list">
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Volunteer</a></li>
+            <li><a href="#">Job Hunting</a></li>
+            <li><a href="#">Fairs</a></li>
+            <li><a href="#">Major Announcements</a></li>
+            <li><a href="#">School Activities</a></li>
+        </ul>
+    </div>
 
-  module.exports = app;
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <p>Login form will go here.</p>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closeSignUpModal()">&times;</span>
+            <p>Sign up form will go here.</p>
+        </div>
+    </div>
+
+    <div class="subforum_container">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Categories</th>
+                </tr>
+                <tr>
+                    <th>Subforum Name</th>
+                    <th>Description</th>
+                    <th>Posts</th>
+                    <th>Last Post</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#">Subforum 1</a></td>
+                    <td>This is the description for Subforum 1.</td>
+                    <td>123</td>
+                    <td>Today at 12:34</td>
+                </tr>
+                <!-- More rows here -->
+                <tr>
+                    <td><a href="#">Subforum 2</a></td>
+                    <td>This is the description for Subforum 2.</td>
+                    <td>456</td>
+                    <td>Yesterday at 11:30</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Subforum 3</a></td>
+                    <td>This is the description for Subforum 3.</td>
+                    <td>789</td>
+                    <td>Last Monday at 10:20</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Subforum 4</a></td>
+                    <td>This is the description for Subforum 3.</td>
+                    <td>789</td>
+                    <td>Last Monday at 10:20</td>
+                </tr>
+                <tr>
+                    <td><a href="#">Subforum 5</a></td>
+                    <td>This is the description for Subforum 3.</td>
+                    <td>789</td>
+                    <td>Last Monday at 10:20</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+
+</html>
