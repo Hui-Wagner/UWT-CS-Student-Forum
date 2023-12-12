@@ -50,8 +50,8 @@ router.post('/login', (req, res) => {
  *
  * /api/auth/login:
  *   post:
- *     summary: Create a new post
- *     description: Creates a new post in the database.
+ *     summary: allows the user to login returning jwt token
+ *     description: generates a jwt token for the user given proper credentials.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
