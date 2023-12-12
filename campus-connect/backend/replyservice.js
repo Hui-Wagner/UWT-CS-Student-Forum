@@ -55,7 +55,7 @@ app.post("/posts/:postid/responce", (request, response) => {
   // root URI: http://localhost:port/posts/:postid/responce
   app.get("/posts/:postid/responce", (request, response) => {
     const postid = request.params.postid;
-    const sqlQuery = "SELECT * FROM responces WHERE postid = '" + postid + "' ORDER BY responcedate ASC;";
+    const sqlQuery = "SELECT * FROM responses WHERE postid = '" + postid + "' ORDER BY responcedate ASC;";
     dbConnection.query(sqlQuery, (err, result) => {
       if (err) {
         return response
