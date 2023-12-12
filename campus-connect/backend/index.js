@@ -57,7 +57,14 @@ const options = {
       },
     ],
   },
-  apis: ['userservice.js', 'postsservice.js', 'replyservice.js', 'searchservice.js', 'subforumservice.js'], // Path to your route files
+  apis: ['userservice.js', 
+  'postsservice.js', 
+  'replyservice.js', 
+  'searchservice.js', 
+  'subforumservice.js', 
+  'authservice.js', 
+  'likedislikeservice.js',
+  'moderationservice.js'], // Path to your route files
 };
 
 const specs = swaggerJsdoc(options);
@@ -105,200 +112,7 @@ const subservice = require("./subservice");
 app.use(subservice);
 
 
- 
-  /**
- * @swagger
- * tags:
- *   name: Posts
- *   description: API operations related to posts
- * 
- * securityDefinitions:
- *   BearerAuth:
- *     type: apiKey
- *     in: header
- *     name: Authorization
- * 
- * /campus-connect/posts:
- *   post:
- *     summary: Create a new post
- *     description: Creates a new post in the Campus Connect application.
- *     tags: [Posts]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         required: true
- *         description: Bearer token (including the word 'Bearer' followed by a space and the token)
- *         type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               subforumid:
- *                 type: integer
- *               title:
- *                 type: string
- *               content:
- *                 type: string
- *             required:
- *               - subforumid
- *               - title
- *               - content
- *     responses:
- *       '200':
- *         description: Successful response
- *         content:
- *           application/json:
- *             example:
- *               Success: "Successful: post was added!"
- *               postId: 123
- *       '400':
- *         description: Failed response
- *         content:
- *           application/json:
- *             example:
- *               Error: "Failed: post was not added."
- * 
- * /campus-connect/posts/{postid}:
- *   get:
- *     tags: [Posts]
- *     summary: Retrieve information for a specific post
- *     description: |
- *       Retrieves information for a specific post in the Campus Connect application.
- *     parameters:
- *       - in: path
- *         name: postid
- *         required: true
- *         description: ID of the post to retrieve
- *         type: string
- *     responses:
- *       '200':
- *         description: Successful response with an array of post information
- *         schema:
- *           type: array
- *           items:
- *             $ref: '#/definitions/Post'
- *       '400':
- *         description: Failed response in case of an error
- *         schema:
- *           $ref: '#/definitions/Error'
- * definitions:
- *   Post:
- *     type: object
- *     properties:
- *       postid:
- *         type: integer
- *       SubForumId:
- *         type: integer
- *       UserId:
- *         type: integer
- *       Title:
- *         type: string
- *       Content:
- *         type: string
- *       PostDate:
- *         type: string
- *   Error:
- *     type: object
- *     properties:
- *       Error:
- *         type: string
- */
 
- /**
- * @swagger
- * /campus-connect/posts/{postid}:
- *   patch:
- *     tags: [Posts]
- *     summary: Update post information
- *     description: Update the information, title, or content of a post.
- *     parameters:
- *       - in: path
- *         name: postid
- *         required: true
- *         description: ID of the post to update.
- *         type: string
- *       - in: header
- *         name: Authorization
- *         required: true
- *         description: Bearer token (including the word 'Bearer' followed by a space and the token)
- *         type: string
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               subforumid:
- *                 type: integer
- *               title:
- *                 type: string
- *               content:
- *                 type: string
- *     responses:
- *       '200':
- *         description: Successful response
- *         content:
- *           application/json:
- *             example:
- *               Success: "Successful: Post was edited!"
- *       '400':
- *         description: Failed response
- *         content:
- *           application/json:
- *             example:
- *               Error: "Failed: Post was not edited."
- *               AuthError: "Failed: Invalid attributes, please only use title and/or content."
- *       '401':
- *         description: Unauthorized response
- *         content:
- *           application/json:
- *             example:
- *               Error: "Unauthorized: Invalid user."
- */
-
- /**
- * @swagger
- * /campus-connect/posts/{postid}:
- *   delete:
- *     tags: [Posts]
- *     summary: Delete a post by post ID
- *     description: Deletes a post in the Campus Connect application. Only the original post creator or an admin is allowed to delete.
- *     parameters:
- *       - in: path
- *         name: postid
- *         required: true
- *         description: ID of the post to delete.
- *         type: string
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       '200':
- *         description: Successful response
- *         content:
- *           application/json:
- *             example:
- *               Success: "Successful: Post was deleted!"
- *       '400':
- *         description: Failed response
- *         content:
- *           application/json:
- *             example:
- *               Error: "Failed: Post was not deleted."
- *       '401':
- *         description: Unauthorized response
- *         content:
- *           application/json:
- *             example:
- *               Error: "Unauthorized: Invalid user."
- */
 // ----------------------------------------------
 // Ref: https://expressjs.com/en/4x/api.html#app
 // (C)  Create a server such that it binds and
