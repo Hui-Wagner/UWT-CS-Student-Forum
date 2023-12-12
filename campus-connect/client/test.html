@@ -5,12 +5,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum Topics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Function to load subforums on page load
+        async function loadSubforums() {
+            try {
+                const response = await fetch('http://localhost:3000/forums');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const subforums = await response.json();
+                displaySubforums(subforums);
+            } catch (error) {
+                console.error('There was a problem fetching subforum data:', error);
+            }
+        }
+
+        // Function to display subforums in the table
+        function displaySubforums(subforums) {
+            const tableBody = document.querySelector('.subforum_container tbody');
+            tableBody.innerHTML = ''; // Clear existing table content
+            subforums.forEach(subforum => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="subforum.html?id=${subforum.SubForumID}">${subforum.Name}</a></td>
+                    <td>${subforum.Description}</td>
+                    <td>${subforum.Posts}</td>
+                    <td>${subforum.LastPost}</td>
+                    <td>
+                        <button onclick="likeSubforum(${subforum.SubForumID})">Like</button>
+                        <button onclick="dislikeSubforum(${subforum.SubForumID})">Dislike</button>
+                        <span>Likes: ${subforum.Likes}</span>
+                        <span>Dislikes: ${subforum.Dislikes}</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Placeholder functions for like/dislike actions
+        function likeSubforum(subForumID) {
+            console.log("Like subforum", subForumID);
+            // make a POST request to like/dislike service
+        }
+
+        function dislikeSubforum(subForumID) {
+            console.log("Dislike subforum", subForumID);
+            //make a POST request to like/dislike service
+        }
+
+        // Call loadSubforums on page load
+        window.addEventListener('DOMContentLoaded', (event) => {
+            loadSubforums();
+        });
+    </script>
 </head>
 
 <body>
 
     <script>
-        // JavaScript to handle opening and closing modals
         function openLoginModal() {
           document.getElementById('loginModal').style.display = 'block';
         }
@@ -52,6 +105,17 @@
 
         <button class="sign_up" onclick="openSignUpModal()">Sign Up</button>
 
+    </div>
+    <div class="category_container">
+        <div class="category_title">Categories</div>
+        <ul class="category_list">
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Volunteer</a></li>
+            <li><a href="#">Job Hunting</a></li>
+            <li><a href="#">Fairs</a></li>
+            <li><a href="#">Major Announcements</a></li>
+            <li><a href="#">School Activities</a></li>
+        </ul>
     </div>
 
     <!-- Login Modal -->
