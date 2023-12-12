@@ -111,6 +111,9 @@ app.use(subforumservice);
 const subservice = require("./subservice");
 app.use(subservice);
 
+const externalAPI = require("./externalAPI");
+app.use(externalAPI);
+
 
 
 // ----------------------------------------------
