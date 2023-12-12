@@ -421,7 +421,7 @@ app.get("/forums/posts/:SubForumID", (req, res) => {
 
    /**
  * @swagger
- * /forums/:SubForumID:
+ * /forums/{SubForumID}:
  *   delete:
  *     tags: [Subforum]
  *     summary: Delete a Subforum given its id, requires auth
