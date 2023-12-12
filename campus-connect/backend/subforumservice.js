@@ -224,10 +224,226 @@ app.get("/forums/posts/:SubForumID", (req, res) => {
       }
       return response
         .status(200)
-        .json({ Success: "Succcessful: subforum was deleted!" });
+        .json({ Success: "Successful: subforum was deleted!" });
     });
   });
   
-  
+//swagger doc
+/**
+ * @swagger
+ * tags:
+ *   name: Subforum
+ *   description: Subforum Webservice
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Subforum:
+ *       type: object
+ *       properties:
+ *         SubForumId:
+ *           type: integer
+ *         Name:
+ *           type: string
+ *         Description:
+ *           type: string
+ *         ViewCount:
+ *           type: integer
+ *         CreatorID:
+ *           type: string
+ *     Post:
+ *       type: object
+ *       properties:
+ *         postid:
+ *           type: integer
+ *         SubForumId:
+ *           type: integer
+ *         UserId:
+ *           type: integer
+ *         Title:
+ *           type: string
+ *         Content:
+ *           type: string
+ *         PostDate:
+ *           type: string
+ */
 
+/**
+ * @swagger
+ * /forums:
+ *   get:
+ *     tags: [Subforum]
+ *     summary:  return all the subforums for the website
+ *     description: 
+ *       returns all subforums
+ *     responses:
+ *       '200':
+ *         description: Success, returns an array of subforums as objects
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Subforum'                  
+ *       '500':
+ *         description: database error
+ */
+
+ /**
+ * @swagger
+ * /forums/posts/{SubForumID}:
+ *   get:
+ *     tags: [Subforum]
+ *     summary:  retrieve all posts for a specfic subforum
+ *     description: 
+ *       returns all posts in a subforum
+ *     parameters:
+ *       - in: path
+ *         name: SubForumID
+ *         required: true
+ *         description: ID of subforum
+ *         type: string
+ *         example: "1"
+ *     responses:
+ *       '200':
+ *         description: Success, returns an array of posts for  subforum as objects
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'                  
+ *       '500':
+ *         description: database error
+ */
+
+/**
+ * @swagger
+ * /forums/{SubForumID}:
+ *   get:
+ *     tags: [Subforum]
+ *     summary:  retrieve the information on a specific subforum
+ *     description: 
+ *       retrive the information on a specific subforum given the id
+ *     parameters:
+ *       - in: path
+ *         name: SubForumID
+ *         required: true
+ *         description: ID of subforum
+ *         type: string
+ *         example: "1"
+ *     responses:
+ *       '200':
+ *         description: Success, returns an array(length 1) of a single subforum object
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'                  
+ *       '400':
+ *         description: Failed Response
+ */
+
+ /**
+ * @swagger
+ * /forums:
+ *   post:
+ *     summary: Create a new Subforum
+ *     description: Creates a new Subforum for the website.
+ *     tags: [Subforum]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "name of subforum"
+ *               description:
+ *                 type: string
+ *                 example: "description of the subforum"
+ *             required:
+ *               - name
+ *               - description
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: subforum was added!"
+ *       '400':
+ *         description: Failed response
+ */
+
+ /**
+ * @swagger
+ * /forums/{SubForumID}:
+ *   put:
+ *     tags: [Subforum]
+ *     summary: Update Subforum information
+ *     description: Update the name and/or description of a subforum
+ *     parameters:
+ *       - in: path
+ *         name: SubForumID
+ *         required: true
+ *         description: id of the subforum to update.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "same name as before"
+ *               description:
+ *                 type: string
+ *                 example: "edited description"
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: Subforum was edited!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized response
+ */
+
+   /**
+ * @swagger
+ * /forums/:SubForumID:
+ *   delete:
+ *     tags: [Subforum]
+ *     summary: Delete a Subforum given its id, requires auth
+ *     description: Deletes a Subforum from the database. Only the original post creator or an admin is allowed to delete.
+ *     parameters:
+ *       - in: path
+ *         name: SubForumID
+ *         required: true
+ *         description: ID of the subforum to delete.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: subforum was deleted!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized error response
+ */
 module.exports = app;
