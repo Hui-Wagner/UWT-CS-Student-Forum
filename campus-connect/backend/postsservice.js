@@ -57,7 +57,7 @@ const { JsonWebTokenError } = require("jsonwebtoken");
   
   
   // ----------------------------------------------
-  // (1) retrive the information for a specific post
+  // (2) retrive the information for a specific post
   // root URI: http://localhost:port/campus-connect/posts/:postid
   // no auth required
   app.get("/campus-connect/posts/:postid", (request, response) => {
@@ -76,7 +76,7 @@ const { JsonWebTokenError } = require("jsonwebtoken");
   
 
   // ----------------------------------------------
-  // (2) update the info and/or the title and content of a post only
+  // (3) update the info and/or the title and content of a post only
   //http://localhost:port/campus-connect/posts/:postid
   // auth required, only original poster or admin allowed to edit, possibly a moderator
   app.patch('/campus-connect/posts/:postid', authenticateJWT, authorizeRole([1,2]),  async (request,response) => {
@@ -119,7 +119,7 @@ const { JsonWebTokenError } = require("jsonwebtoken");
       }else{
         return response
                .status(400)
-               .json({ Error: "Failed: invalid attributes, please only use title and/or content =" });
+               .json({ AuthError: "Failed: invalid attributes, please only use title and/or content =" });
       }
     }
     let setString = temp.join(`, `);
@@ -181,4 +181,159 @@ const { JsonWebTokenError } = require("jsonwebtoken");
   });
 
   
+  /**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: Post Webservice
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         postid:
+ *           type: integer
+ *         SubForumId:
+ *           type: integer
+ *         UserId:
+ *           type: integer
+ *         Title:
+ *           type: string
+ *         Content:
+ *           type: string
+ *         PostDate:
+ *           type: string
+ * 
+ * 
+ * /campus-connect/posts:
+ *   post:
+ *     summary: Create a new post
+ *     description: Creates a new post in the database.
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subforumid:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *             required:
+ *               - subforumid
+ *               - title
+ *               - content
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: post was added!"
+ *               postId: 100
+ *       '400':
+ *         description: Failed response
+ * 
+ * /campus-connect/posts/{postid}:
+ *   get:
+ *     tags: [Posts]
+ *     summary: Retrieve information for a specific post
+ *     description: 
+ *       Retrieves information for a specific post in database.
+ *     parameters:
+ *       - in: path
+ *         name: postid
+ *         required: true
+ *         description: ID of the post to retrieve
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'
+ *       '400':
+ *         description: Failed response in case of an error
+ */
+
+ /**
+ * @swagger
+ * /campus-connect/posts/{postid}:
+ *   patch:
+ *     tags: [Posts]
+ *     summary: Update post information
+ *     description: Update the information, title, or content of a post.
+ *     parameters:
+ *       - in: path
+ *         name: postid
+ *         required: true
+ *         description: id of the post to update.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               subforumid:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: Post was edited!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized response
+ */
+
+ /**
+ * @swagger
+ * /campus-connect/posts/{postid}:
+ *   delete:
+ *     tags: [Posts]
+ *     summary: Delete a post by post ID
+ *     description: Deletes a post from the database. Only the original post creator or an admin is allowed to delete.
+ *     parameters:
+ *       - in: path
+ *         name: postid
+ *         required: true
+ *         description: ID of the post to delete.
+ *         type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: Post was deleted!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized error response
+ */
 module.exports = app;
