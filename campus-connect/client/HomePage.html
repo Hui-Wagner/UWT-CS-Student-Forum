@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Topics</title>
+    <link rel="stylesheet" href="../client/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</head>
+<header>
+	<a id="logo" href="/">
+        <img src="../client/Assets/campus%20connect%20logo.JPG" alt="Campus Connect Logo">
+    </a>
+    
+	<h1 id="page-title">Campus Connect</h1>
+
+	<!-- search -->
+	<div id="search-bar">
+		<i class="fas fa-search"></i>
+		<input class="input" type="text" placeholder="Search Campus Connect">
+		<div id="search-results"></div>
+	</div>
+
+	<button id = "login">Login</button>
+</header>
+
+<body>
+	<main id="page-content">
+		<div id="results-list">
+			<div id="filter-list" class="box">
+				<div class="filter" >
+					<i class="fa-solid fa-user-group"></i>
+					<p>Communities</p>
+				</div>
+				<div class="filter" >
+					<i class="fa-solid fa-message"></i>
+					<p>Posts</p>
+				</div>
+				<div class="filter" onclick="toggleFilter(2, true)">
+					<i class="fa-solid fa-user"></i>
+					<p>Users</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- scroll up -->
+		<a id="scroll-up" class="button" onclick="scrollToTop()">
+			<i class="fas fa-rocket"></i>
+			<p>Scroll to top</p>
+		</a>
+
+		<!-- post viewer -->
+		<div id="post-viewer">
+
+		</div>
+	</main>
+    <div class="table">
+        <div class="header">Categories</div>
+        <div class="row">Events</div>
+        <div class="row">Volunteer</div>
+        <div class="row">Job Hunting</div>
+        <div class="row">Fairs</div>
+        <div class="row">Major Announcements</div>
+        <div class="row">School Activities</div>
+      </div>
+      
+</body>
+
+<script>
+$(document).ready(function () {
+        //$(".table").hide();
+        fetchHomePageForumData();
+    });
+
+    function fetchHomePageForumData() {
+                // Make an AJAX request to fetch forum data
+                $.ajax({
+                    url: 'http://localhost:3000/forums',
+                    method: 'GET',
+                    success: function (data) {
+                        // On success, iterate through the data and add rows to the table
+                        data.forEach(function (forum) {
+                            // Create a new div element with the class "row" and the forum name as content
+                            var newRow = $('<div class="row" id="' + forum.Name + '">' + forum.Name + '</div>');
+
+                            // Append the new row to the table
+                            $(".table").append(newRow);
+                        });
+                    },
+                    error: function () {
+                        // Handle error
+                        console.error('Failed to fetch forum data.');
+                    }
+                });
+            }
+
+    function fetchSubForumPageData(){
+
+        var specificForum = $('#')
+
+
+
+
+    }
+
+</script>
+
+
+</html>

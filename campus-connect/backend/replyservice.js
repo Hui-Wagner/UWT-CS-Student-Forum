@@ -54,10 +54,12 @@ app.post("/campus-connect/replies/:postid", authenticateJWT, authorizeRole([1,2,
   
   // ----------------------------------------------
   // (2) retrieve all replies for a post sorted by time created
+
   // root URI: http://localhost:port/campus-connect/replies/:postid
   app.get("/campus-connect/replies/:postid", (request, response) => {
     const postId = request.params.postid;
     const sqlQuery = "SELECT * FROM responses WHERE postid = '" + postId + "' ORDER BY responcedate ASC;";
+
     dbConnection.query(sqlQuery, (err, result) => {
       if (err) {
         return response
