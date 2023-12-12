@@ -1,171 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
+// ----------------------------------------------
+// TCSS 460: Autumn 2023
+// reply service
+// Backend REST Service Module
+// ----------------------------------------------
+// Express is a Node.js web application framework
+// that provides a wide range of APIs and methods
+// Express API Reference:
+// https://expressjs.com/en/resources/middleware/cors.html
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum Topics</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+// ----------------------------------------------
+// retrieve necessary files (express and cors)
+const express = require("express");
+const cors = require("cors");
 
-</head>
-<header>
-    <div class="nav_bar">
+// retrieve the MySQL DB Configuration Module
+const dbConnection = require("./config");
+// use this library for parsing HTTP body requests
+var bodyParser = require("body-parser");
+const { authenticateJWT, authorizeRole } = require("./authMiddleware");
 
-        <img src="../client/Assets/campus%20connect%20logo.JPG" id="logo" alt="Campus Connect Logo">
+// ----------------------------------------------
+// (A)  Create an express application instance
+//      and parses incoming requests with JSON
+//      payloads
+// ----------------------------------------------
+var app = express(express.json);
 
 
-        <a href="#">Home</a>
 
-        <div class="search_container">
-            <input type="text" placeholder="Search...">
-            <button type="submit">Search</button>
-        </div>
-
-        <button class="login" onclick="openLoginModal()">Login</button>
-
-        <button class="sign_up" onclick="openSignUpModal()">Sign Up</button>
-
-    </div>
-</header>
-
-<body>
-
-    <script>
-      $(document).ready(function () {
-    //$(".table").hide();
-    fetchHomePageForumData();
-});
-
-function fetchHomePageForumData() {
-    // Make an AJAX request to fetch forum data
-    $.ajax({
-        url: 'http://localhost:3000/forums',
-        method: 'GET',
-        success: function (data) {
-            // On success, iterate through the data and add list items to the category list
-            data.forEach(function (forum) {
-                // Create a new list item with an anchor inside
-                var newListItem = $('<li><a href="#" id="' + forum.Name + '">' + forum.Name + '</a></li>');
-
-                // Append the new list item to the category list
-                $(".category_list").append(newListItem);
-            });
-        },
-        error: function () {
-            // Handle error
-            console.error('Failed to fetch forum data.');
-        }
+// ----------------------------------------------
+// (1) create a reply for a post
+// URI: http://localhost:port/campus-connect/replies/:postid
+app.post("/campus-connect/replies/:postid", authenticateJWT, authorizeRole([1,2,3]), (request, response) => {
+    let postid = request.params.postid
+    const sqlQuery = "INSERT INTO responses (postid, userid, content, responcedate) VALUES (?);";
+    const values = [
+      postid,
+      request.user.userId,
+      request.body.content,
+      new Date() //current time
+    ];
+  
+    dbConnection.query(sqlQuery, [values], (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: reply was not added." });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Successful: reply was added!." });
     });
-}
+  });
+  
+  
+  // ----------------------------------------------
+  // (2) retrieve all replies for a post sorted by time created
+  // root URI: http://localhost:port/campus-connect/replies/:postid
+  app.get("/campus-connect/replies/:postid", (request, response) => {
+    const postId = request.params.postid;
+    const sqlQuery = "SELECT * FROM responses WHERE postid = '" + postId + "' ORDER BY responcedate ASC;";
+    dbConnection.query(sqlQuery, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Error in the SQL statement. Please check." });
+      }
+      response.setHeader("postId", postId); // send a custom
+      return response.status(200).json(result);
+    });
+  });
+  
+  // ----------------------------------------------
+  // (3) retrieve info for a specific reply/response
+  // root URI: http://localhost:port/campus-connect/replies/single/:replyid
+  app.get("/campus-connect/replies/single/:replyid", (request, response) => {
+    const replyId = request.params.replyid;
+    const sqlQuery = "SELECT * FROM responses WHERE responseid = '" + replyId + "' ORDER BY responcedate ASC;";
+    dbConnection.query(sqlQuery, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Error in the SQL statement. Please check." });
+      }
+      response.setHeader("replyid", replyId); // send a custom
+      return response.status(200).json(result);
+    });
+  });
 
-        // JavaScript to handle opening and closing modals
-        function openLoginModal() {
-          document.getElementById('loginModal').style.display = 'block';
-        }
-        
-        function closeLoginModal() {
-          document.getElementById('loginModal').style.display = 'none';
-        }
-        
-        function openSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'block';
-        }
-        
-        function closeSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'none';
-        }
-        
-        // Close the modal if the user clicks anywhere outside of it
-        window.onclick = function(event) {
-          if (event.target.className === 'modal') {
-            event.target.style.display = "none";
-          }
-        }
-    </script>
-
-
-
+  // ----------------------------------------------
+  // (4) update the info for a reply
+  // URI: http://localhost:port/campus-connect/replies/edit/:replyid
+  app.put("/campus-connect/replies/edit/:replyid",authenticateJWT, authorizeRole([1]), async (request, response) => {
+    const replyId = request.params.replyid;
     
-    <div class="category_container">
-        <div class="category_title">Categories</div>
-        <ul class="category_list">
-            <li><a href="#">Events</a></li>
-            <li><a href="#">Volunteer</a></li>
-            <li><a href="#">Job Hunting</a></li>
-            <li><a href="#">Fairs</a></li>
-            <li><a href="#">Major Announcements</a></li>
-            <li><a href="#">School Activities</a></li>
-        </ul>
-    </div>
+    
+    //authenticate that the user made this post
+    url = `http://localhost:3000/campus-connect/replies/single/${replyId}`
+    let replyResponse = await fetch(url, {
+        method:'GET'
+    })
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <p>Login form will go here.</p>
-        </div>
-    </div>
+    //retreive user id for creator
+    let replyData = await replyResponse.json()
+    let reply = replyData[0]
+    let creatorId = reply["UserID"]
 
-    <!-- Sign Up Modal -->
-    <div id="signUpModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeSignUpModal()">&times;</span>
-            <p>Sign up form will go here.</p>
-        </div>
-    </div>
+    //check to see if userid matches to logged in user
+    if(creatorId != request.user.userId){
+      return response
+        .status(401)
+        .json({ Error: "Unauthorized: invalid user" });
+    }
+    
+    //perform update
+    const sqlQuery = `UPDATE responses SET content = ?
+      WHERE responseid = ? ;`;
+    const values = [
+      request.body.content
+    ];
+  
+    console.log(sqlQuery); // for debugging purposes:
+    dbConnection.query(sqlQuery, [...values, replyId], (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: Reply was not edited." });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Successful: Reply was edited!." });
+    });
+  });
+  
+  // ----------------------------------------------
+  // (5) Delete a post by post id
+  // URI: http://localhost:port/campus-connect/replies/single/:replyid
+  app.delete("/campus-connect/replies/single/:replyid",authenticateJWT, authorizeRole([1,2]), async (request, response) => {
+    const replyId = request.params.replyid;
 
-    <div class="subforum_container">
+    //If user is not an admin then check to see if they created the post
+    if(request.user.role == 1){
+      //If user is not an admin then check to see if they created the post
+      //retrieve the post info to check who created the post
+      url = `http://localhost:3000/campus-connect/replies/single/${replyId}`
+      let replyResponse = await fetch(url, {
+          method:'GET'
+      })
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Categories</th>
-                </tr>
-                <tr>
-                    <th>Subforum Name</th>
-                    <th>Description</th>
-                    <th>Posts</th>
-                    <th>Last Post</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="#">Subforum 1</a></td>
-                    <td>This is the description for Subforum 1.</td>
-                    <td>123</td>
-                    <td>Today at 12:34</td>
-                </tr>
-                <!-- More rows here -->
-                <tr>
-                    <td><a href="#">Subforum 2</a></td>
-                    <td>This is the description for Subforum 2.</td>
-                    <td>456</td>
-                    <td>Yesterday at 11:30</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 3</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 4</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 5</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</body>
+      //retrieve user id for creator
+      let replyData = await replyResponse.json()
+      let reply = replyData[0]
+      let creatorId = reply["UserID"]
 
-</html>
+      //check to see if userid matches to logged in user
+      if(creatorId != request.user.userId){
+        return response
+          .status(401)
+          .json({ Error: "Unauthorized: invalid user" });
+      }
+    }
+    
+    //proceed with deletion
+    const sqlQuery = "DELETE FROM responses WHERE responseid = ? ; ";
+    dbConnection.query(sqlQuery, replyId, (err, result) => {
+      if (err) {
+        return response
+          .status(400)
+          .json({ Error: "Failed: post was not deleted" });
+      }
+      return response
+        .status(200)
+        .json({ Success: "Succcessful: post was deleted!" });
+    });
+  });
+
+
+  module.exports = app;
