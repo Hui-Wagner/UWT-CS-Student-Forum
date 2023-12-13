@@ -48,7 +48,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Your API',
+      title: 'Campus Connect API',
       version: '1.0.0',
     },
     servers:[
@@ -64,7 +64,10 @@ const options = {
   'subforumservice.js', 
   'authservice.js', 
   'likedislikeservice.js',
-  'moderationservice.js'], // Path to your route files
+  'moderationservice.js',
+  'externalAPI.js',
+  'subservice.js'
+], 
 };
 
 const specs = swaggerJsdoc(options);
