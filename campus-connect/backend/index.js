@@ -48,7 +48,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Your API',
+      title: 'Campus Connect API',
       version: '1.0.0',
     },
     servers:[
@@ -65,7 +65,8 @@ const options = {
   'authservice.js', 
   'likedislikeservice.js',
   'moderationservice.js',
-  'externalAPI.js'
+  'externalAPI.js',
+  'subservice.js'
 ], 
 };
 
