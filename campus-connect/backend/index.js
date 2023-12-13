@@ -64,7 +64,9 @@ const options = {
   'subforumservice.js', 
   'authservice.js', 
   'likedislikeservice.js',
-  'moderationservice.js'], // Path to your route files
+  'moderationservice.js',
+  'externalAPI.js'
+], 
 };
 
 const specs = swaggerJsdoc(options);
