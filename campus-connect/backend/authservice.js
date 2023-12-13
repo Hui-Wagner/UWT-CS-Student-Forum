@@ -42,6 +42,22 @@ router.post('/login', (req, res) => {
     });
 });
 
+// POST route for user registration
+router.post('/register', (req, res) => {
+    const { UserName, UserPassword } = req.body;
+    // Hash password before storing it
+    const hashedPassword = bcrypt.hashSync(UserPassword, 10);
+
+    const sqlQuery = 'INSERT INTO Users (UserName, UserPassword) VALUES (?, ?)';
+
+    dbConnection.query(sqlQuery, [UserName, hashedPassword], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Database error', error: err });
+        }
+        res.status(201).json({ message: 'User registered successfully' });
+    });
+});
+
 // Export the router so it can be used in the main server file (index.js)
 module.exports = router;
 

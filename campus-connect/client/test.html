@@ -9,14 +9,12 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://kit.fontawesome.com/c34d03d296.js" crossorigin="anonymous"></script>
 
-
 </head>
 <header>
     <div class="nav_bar">
 
         <img src="../client/Assets/campus%20connect%20logo.JPG" id="logo" alt="Campus Connect Logo">
         <h1 id="page-title">Campus Connect</h1>
-
 
         <a href="#">Home</a>
 
@@ -27,13 +25,33 @@
 
         <button class="login_button"  onclick="openLoginModal()">Login</button>
 
-        <button class="signup_button" onclick="openSignUpModal()">Sign Up</button>
+        <button class="signup_button" onclick="window.location.href='signup.html'">Sign Up</button>
+
 
     </div>
 </header>
 
 <body>
-
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+        <!-- Sign Up Modal -->
+        <div id="signUpModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <span class="close" onclick="closeSignUpModal()">&times;</span>
+                <p>Sign up form will go here.</p>
+            </div>
+        </div>
     <script>
       $(document).ready(function () {
     $(".test").hide();
@@ -61,6 +79,61 @@
         $('.ReplyPage').show();
     });
 });
+
+// Sign-Up form submission handling
+$('#signupForm').submit(function (event) {
+    event.preventDefault();
+    const username = $('#signupUsername').val();
+    const password = $('#signupPassword').val();
+
+    $.ajax({
+        url: 'http://localhost:3000/api/auth/register',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            UserName: username,
+            UserPassword: password
+        }),
+        success: function (response) {
+            alert('Registered successfully!');
+            closeSignUpModal();
+            // Additional actions upon successful registration
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('Registration failed: ' + textStatus);
+        }
+    });
+});
+
+
+// You would have a sign-up modal similar to your login modal with form fields for user details.
+
+// Handle login form submission
+$('#loginForm').submit(function (event) {
+                event.preventDefault();
+                const username = $('#username').val();
+                const password = $('#password').val();
+
+                $.ajax({
+                    url: 'http://localhost:3000/api/auth/login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        UserName: username,
+                        UserPassword: password
+                    }),
+                    success: function (response) {
+                        localStorage.setItem('token', response.token);
+                        alert('Logged in successfully!');
+                        closeLoginModal();
+                        // Additional actions upon successful login
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('Login failed: ' + textStatus);
+                    }
+                });
+            });
+
 ///////////////////////////////////////////////////////////////////////////
 //Home Page Methods
 function fetchHomePageForumsData() {
@@ -148,19 +221,18 @@ function fetchPosts(){
 
         // JavaScript to handle opening and closing modals
         function openLoginModal() {
-          document.getElementById('loginModal').style.display = 'block';
+            $('#loginModal').show();
         }
-        
+
         function closeLoginModal() {
-          document.getElementById('loginModal').style.display = 'none';
+            $('#loginModal').hide();
         }
-        
         function openSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'block';
+        $('#signUpModal').show();
         }
-        
+
         function closeSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'none';
+            $('#signUpModal').hide();
         }
         
         // Close the modal if the user clicks anywhere outside of it
@@ -349,24 +421,6 @@ function displayReplies(replies, PostTitle) {
             <li><a href="#">Major Announcements</a></li>
             <li><a href="#">School Activities</a></li>
         </ul>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <p>Login form will go here.</p>
-        </div>
-    </div>
-
-    <!-- Sign Up Modal -->
-    <div id="signUpModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeSignUpModal()">&times;</span>
-            <p>Sign up form will go here.</p>
-        </div>
     </div>
 
     <div class="subforum_container">
