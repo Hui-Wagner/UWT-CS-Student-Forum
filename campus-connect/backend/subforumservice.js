@@ -87,7 +87,6 @@ app.get("/forums/posts/:SubForumID", (req, res) => {
           // Note: The post list is still sent to the client even if view count fails to update
           console.error("Failed to update view count for subforum: ", updateErr);
         }
-        // Even if there is an error updating the view count, the post list is still sent to the client
       });
   
       // Send the post list with a 200 status code (OK)

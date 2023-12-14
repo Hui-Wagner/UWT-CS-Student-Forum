@@ -1,31 +1,7 @@
 /**
- * Authentication Middleware for Express.js
+ * Authentication Middleware 
  *
- * Purpose:
- * This middleware function is designed to secure routes in an Express.js
- * (Express.js is one framework of Node.js) application
- * by verifying JSON Web Tokens (JWT) sent in the Authorization header of HTTP requests.
- * It ensures that only requests with a valid JWT, which signifies authenticated users,
- * can access protected routes and resources.
- *
- * Usage:
- * To use this middleware, import it into your route module file and apply it to routes
- * that require user authentication. When a request is made to a protected route, this
- * middleware will extract the JWT from the Authorization header, verify its validity, and
- * if valid, allow the request to proceed. If the token is missing, expired, or invalid,
- * the middleware will respond with the appropriate HTTP status code indicating an unauthorized
- * request, thus preventing access to the route's handler.
- *
- * Example:
- * const authenticateJWT = require('./authMiddleware');
- * app.post("/protected-route", authenticateJWT, (req, res) => {
- *   // Handle request - only authenticated users can access this
- * });
- *
- * Note:
- * This middleware requires the `jsonwebtoken` package to verify the JWT against
- * the secret key used to sign the token. Ensure the JWT_SECRET environment variable
- * is set with the secret key.
+ * This middleware function is used to authenticate users
  */
 
 

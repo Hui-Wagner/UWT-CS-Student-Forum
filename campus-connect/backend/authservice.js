@@ -1,12 +1,8 @@
-/** This code creates an Express router that handles the /login POST route. When a user attempts to log in,
- *  their username and password are compared against those in the database. If the credentials are valid,
- *  a JWT is generated and sent back to the user. This JWT can be used for authenticating subsequent requests from the user.
- *  The use of bcrypt ensures that the password comparison is secure, even if the passwords stored in the database are hashed. */
 
 const express = require('express');
-//const bcrypt = require('bcryptjs');
+
 const jwt = require('jsonwebtoken');
-const dbConnection = require('./config'); // Ensure this is the path to your config file
+const dbConnection = require('./config'); 
 
 const router = express.Router();
 
@@ -30,7 +26,7 @@ router.post('/login', (req, res) => {
         }
 
         // If password matches, create a JWT for the user
-        const userType = results[0].UserType; // Assuming UserType is the column name in your Users table
+        const userType = results[0].UserType; 
         const token = jwt.sign(
           { userId: user.User_ID, role: userType },
           process.env.JWT_SECRET,
@@ -82,6 +78,6 @@ router.post('/login', (req, res) => {
  *       '500':
  *         description: Database Error 
  */
-// Export the router so it can be used in the main server file (index.js)
+
 module.exports = router;
 

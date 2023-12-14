@@ -1,6 +1,9 @@
 // Declare global variables for subforum ID and name
 let globalSubforumID;
 let globalSubforumName;
+let globalPostID;
+let globalPostTitle;
+let globalPostDetails;
 
 // Document ready function
 $(document).ready(function () {
@@ -36,15 +39,21 @@ $(document).ready(function () {
         $('.SubforumPage').show();
     });
 
-    // Open the Post Page with the replies
-    $(document).on('click', '.post', function () {
-        $(".SubforumPage").hide();
-        const PostID = $(this).find('.post-content').data('post-id');
-        const PostTitle = $(this).find('h3').text();
-        const PostDetails = $(this).find('p').text();
-        fetchRepliesForPost(PostID, PostTitle, PostDetails);
-        $('.ReplyPage').show();
-    });
+   // Open the Post Page with the replies
+   $(document).on('click', '.post', function () {
+    $(".SubforumPage").hide();
+    const PostID = $(this).find('.post-content').data('post-ids');
+    const PostTitle = $(this).find('h3').text();
+    const PostDetails = $(this).find('p').text();
+    globalPostID = PostID;
+    globalPostTitle = PostTitle;
+    globalPostDetails = PostDetails;
+    console.log("The post id from clicking on the post" + PostID);
+    console.log(PostTitle);
+    console.log(PostDetails);
+    fetchRepliesForPost(PostID, PostTitle, PostDetails);
+    $('.ReplyPage').show();
+});
 
 
    // Event listener for upvote button
@@ -54,7 +63,7 @@ $('.Posts').on('click', '.fas.fa-arrow-up', function () {
 
     // AJAX request to upvote the post
     $.ajax({
-        url: `http://localhost:port/posts/upvote/${postID}`,
+        url: `http://localhost:3000/posts/upvote/${postID}`,
         method: 'PATCH',
         success: function (data) {
             // Update the vote count in the UI
@@ -74,7 +83,7 @@ $('.Posts').on('click', '.fas.fa-arrow-down', function () {
 
     // AJAX request to downvote the post
     $.ajax({
-        url: `http://localhost:port/posts/downvote/${postID}`,
+        url: `http://localhost:3000/posts/downvote/${postID}`,
         method: 'PATCH',
         success: function (data) {
             // Update the vote count in the UI
@@ -223,7 +232,7 @@ $('#createPostForm').on('submit', function (event) {
 
 // Event listener for submit button in reply page
 $(document).on('click', '.SubmitButton', function () {
-    // Get the post ID from wherever you store it in your front-end logic
+    
     const postId = 2;
     console.log("This is the post" + postId);
 
@@ -233,7 +242,7 @@ $(document).on('click', '.SubmitButton', function () {
 
     // Make the AJAX request to create a reply
     $.ajax({
-        url: `http://localhost:port/campus-connect/replies/${postId}`,
+        url: `http://localhost:3000/campus-connect/replies/${postId}`,
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -257,13 +266,6 @@ $(document).on('click', '.SubmitButton', function () {
 });
 
     
-
-// Function to fetch replies for a post
-function fetchRepliesForPost(postId) {
-    // Implement your logic to fetch replies
-    // This function should update the UI with the new set of replies
-    // ...
-}
 
 
 
@@ -456,6 +458,7 @@ function fetchRepliesForPost(postId, PostTitle, PostDetails) {
         success: function (data) {
             // Handle the retrieved replies data
             console.log('Replies for Post ID:', postId, data);
+            console.log(PostTitle);
             displayReplies(data, PostTitle, PostDetails); // Implement this function to display replies
         },
         error: function (error) {
