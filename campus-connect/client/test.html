@@ -2,154 +2,148 @@
 <html lang="en">
 
 <head>
+    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title of the webpage -->
     <title>Forum Topics</title>
+
+    <!-- External stylesheets and scripts -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://kit.fontawesome.com/c34d03d296.js" crossorigin="anonymous"></script>
-
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
-<header>
-    <div class="nav_bar">
 
-        
+<header>
+    <!-- Header section with navigation -->
+    <div class="nav_bar">
+        <!-- Website title -->
         <h1 id="page-title">Campus Connect</h1>
 
-
+        <!-- Navigation links -->
         <a href="#">Home</a>
 
+        <!-- Search container -->
         <div class="search_container">
             <input type="text" id="searchInput" placeholder="Search...">
             <button id="searchButton" type="button">Search</button>
         </div>
 
+        <!-- Login, Sign Up, and Logout buttons -->
         <button class="login_button" onclick="openLoginModal()">Login</button>
-
         <button class="signup_button" onclick="openSignUpModal()">Sign Up</button>
         <button class="logout_button" style="display: none">Logout</button>
 
-
+        <!-- User dropdown with user icon, name, and options -->
         <div class="dropdown" id="userDropdown">
             <button class="dropbtn" id="userButton">
-              <!-- Add your user icon or avatar here -->
-              <i class="fas fa-user"></i>
-              <span id="username">John Doe</span>
-              <span class="carot">&#9660;</span>
+                <i class="fas fa-user"></i>
+                <span id="username">John Doe</span>
+                <span class="carot">&#9660;</span>
             </button>
             <div class="dropdown-content" id="userDropdownContent">
-              <a href="#">LinkedIn Job Search</a>
-              <a href="#">News</a>
+                <a href="#">LinkedIn Job Search</a>
+                <a href="#">News</a>
             </div>
-          </div>
-
+        </div>
     </div>
 </header>
 
 <body>
-
-  
-     <!-- Displays Main Page -->
-    <div class = "Main-Container">
+    <!-- Main container for the webpage -->
+    <div class="Main-Container">
+        <!-- Welcome banner section -->
         <div id="Welcome-Banner">
             <h1>Welcome!</h1>
             <h3>Campus Connect: A forum to keep you up to date with your school</h3>
             <h3>Take a look around</h3>
         </div>
 
-        <div class = "subforums">
-
+        <!-- Subforums container -->
+        <div class="subforums">
+            <!-- Subforum content will be dynamically added here -->
         </div>
-
-
-
-
-
-
-
     </div>
-     <!-- Displays SubForum Page -->
-    <div class="SubforumPage">
 
+    <!-- Create Post Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" role="dialog" aria-labelledby="createPostModalLabel" aria-hidden="true">
+        <!-- Modal structure for creating a new post -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for creating a new post -->
+                    <form id="createPostForm">
+                        <div class="form-group">
+                            <label for="postTitle">Title:</label>
+                            <input type="text" class="form-control" id="postTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postContent">Content:</label>
+                            <textarea class="form-control" id="postContent" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subforum Page -->
+    <div class="SubforumPage">
         <!-- Subforum Title -->
         <div class="Title">
             <h2></h2>
             <button class="create-post-button">Create Post</button>
         </div>
-    
+
         <!-- Posts Section -->
         <div class="Posts">
-    
-            <!-- Post 1 -->
-            <div class="post">
-                <div class="post-content">
-                    <h3>Post Title 1</h3>
-                    <p>This is the content of the post.</p>
-                </div>
-                <div class="post-actions">
-                    <button class="reply-button">Reply</button>
-                    <div class="vote-section">
-                        <i class="fas fa-arrow-up"></i>
-                        <span class="vote-count">42</span>
-                        <i class="fas fa-arrow-down"></i>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Post 2 -->
-            <div class="post">
-                <div class="post-content">
-                    <h3>Post Title 2</h3>
-                    <p>This is another post's content.</p>
-                </div>
-                <div class="post-actions">
-                    <button class="reply-button">Reply</button>
-                    <div class="vote-section">
-                        <i class="fas fa-arrow-up"></i>
-                        <span class="vote-count">18</span>
-                        <i class="fas fa-arrow-down"></i>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Add more posts as needed -->
-    
+            <!-- Post content will be dynamically added here -->
         </div>
-    
     </div>
-    <!-- Displays Reply Page -->
+
+    <!-- Reply Page -->
     <div class="ReplyPage">
-        <div class="ReplyPagePostTitle">
+        <!-- Reply Page Post Title with data attribute for post IDs -->
+        <div class="ReplyPagePostTitle" data-post-ids="">
             <h2>Post Title</h2>
             <p>Post Content goes here. It can be a longer text describing the post.</p>
+            <!-- Vote section with buttons, post date, and reply count -->
             <div class="VoteSection">
                 <div class="VoteButton">▲</div>
                 <div class="VoteButton">▼</div>
                 <span>Post Date - 10 Replies</span>
             </div>
         </div>
-    
+
+        <!-- Make Reply section with textarea and submit button -->
         <div class="MakeReply">
             <textarea class="ReplyTextArea" placeholder="Write your reply..."></textarea>
             <button class="SubmitButton">Submit Reply</button>
         </div>
-    
+
+        <!-- Replies container -->
         <div class="Replies">
-            <div class="Reply">
-                <div class="ReplyContent">Reply Content goes here.</div>
-                <div class="ReplyInfo">Username - Reply Date</div>
-            </div>
-    
-            <!-- Additional replies can be added here dynamically -->
+            <!-- Reply content will be dynamically added here -->
         </div>
     </div>
 
-    
     <!-- Dark overlay for Login Modal -->
     <div class="overlay" id="overlays"></div>
+
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
+        <!-- Modal for user login -->
         <span class="close">&times;</span>
         <div class="form-container">
             <h2>Login</h2>
@@ -158,18 +152,12 @@
                 <input type="password" id="password" name="password" placeholder="Password" required>
                 <button type="submit">Login</button>
             </form>
-            
             <p>New to CaseConnect? <a href="#">Sign Up</a></p>
         </div>
     </div>
-    
-    
-  
 
-    
-
-
-<script src="../client/script.js"></script>
+    <!-- Custom JavaScript file -->
+    <script src="../client/script.js"></script>
 </body>
 
 </html>

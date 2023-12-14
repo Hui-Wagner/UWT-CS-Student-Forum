@@ -146,7 +146,7 @@ header .login_button .signup_button:hover{
 }
 
 /* Main Page SubForum design */
-/* Add your styling for subforums here */
+
 .subforums {
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* Set to four columns */
