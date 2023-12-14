@@ -2,125 +2,163 @@
 <html lang="en">
 
 <head>
+    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title of the webpage -->
     <title>Forum Topics</title>
+
+    <!-- External stylesheets and scripts -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://kit.fontawesome.com/c34d03d296.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 
-<body>
-
-    <script>
-        // JavaScript to handle opening and closing modals
-        function openLoginModal() {
-          document.getElementById('loginModal').style.display = 'block';
-        }
-        
-        function closeLoginModal() {
-          document.getElementById('loginModal').style.display = 'none';
-        }
-        
-        function openSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'block';
-        }
-        
-        function closeSignUpModal() {
-          document.getElementById('signUpModal').style.display = 'none';
-        }
-        
-        // Close the modal if the user clicks anywhere outside of it
-        window.onclick = function(event) {
-          if (event.target.className === 'modal') {
-            event.target.style.display = "none";
-          }
-        }
-    </script>
-
-
-
+<header>
+    <!-- Header section with navigation -->
     <div class="nav_bar">
+        <img src="../client/Assets/campus_connect_logo.JPG" id="logo" alt="Campus Connect Logo">
+        <!-- Website title -->
+        <h1 id="page-title">Campus Connect</h1>
 
-        <img src="#" />
-
+        <!-- Navigation links -->
         <a href="#">Home</a>
 
+        <!-- Search container -->
         <div class="search_container">
-            <input type="text" placeholder="Search...">
-            <button type="submit">Search</button>
+            <input type="text" id="searchInput" placeholder="Search...">
+            <button id="searchButton" type="button">Search</button>
         </div>
 
-        <button class="login" onclick="openLoginModal()">Login</button>
+        <!-- Login, Sign Up, and Logout buttons -->
+        <button class="login_button" onclick="openLoginModal()">Login</button>
+        <button class="signup_button" onclick="openSignUpModal()">Sign Up</button>
+        <button class="logout_button" style="display: none">Logout</button>
 
-        <button class="sign_up" onclick="openSignUpModal()">Sign Up</button>
-
+        <!-- User dropdown with user icon, name, and options -->
+        <div class="dropdown" id="userDropdown">
+            <button class="dropbtn" id="userButton">
+                <i class="fas fa-user"></i>
+                <span id="username">John Doe</span>
+                <span class="carot">&#9660;</span>
+            </button>
+            <div class="dropdown-content" id="userDropdownContent">
+                <a href="#">LinkedIn Job Search</a>
+                <a href="#">News</a>
+            </div>
+        </div>
     </div>
+</header>
+
+<body>
+    <!-- Main container for the webpage -->
+    <div class="Main-Container">
+        <!-- Welcome banner section -->
+        <div id="Welcome-Banner">
+            <h1>Welcome!</h1>
+            <h3>Campus Connect: A forum to keep you up to date with your school</h3>
+            <h3>Take a look around</h3>
+        </div>
+
+        <!-- Subforums container -->
+        <div class="subforums">
+            <!-- Subforum content will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" role="dialog" aria-labelledby="createPostModalLabel" aria-hidden="true">
+        <!-- Modal structure for creating a new post -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for creating a new post -->
+                    <form id="createPostForm">
+                        <div class="form-group">
+                            <label for="postTitle">Title:</label>
+                            <input type="text" class="form-control" id="postTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postContent">Content:</label>
+                            <textarea class="form-control" id="postContent" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subforum Page -->
+    <div class="SubforumPage">
+        <!-- Subforum Title -->
+        <div class="Title">
+            <h2></h2>
+            <button class="create-post-button">Create Post</button>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="Posts">
+            <!-- Post content will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Reply Page -->
+    <div class="ReplyPage">
+        <!-- Reply Page Post Title with data attribute for post IDs -->
+        <div class="ReplyPagePostTitle" data-post-ids="">
+            <h2>Post Title</h2>
+            <p>Post Content goes here. It can be a longer text describing the post.</p>
+            <!-- Vote section with buttons, post date, and reply count -->
+            <div class="VoteSection">
+                <div class="VoteButton">▲</div>
+                <div class="VoteButton">▼</div>
+                <span>Post Date - 10 Replies</span>
+            </div>
+        </div>
+
+        <!-- Make Reply section with textarea and submit button -->
+        <div class="MakeReply">
+            <textarea class="ReplyTextArea" placeholder="Write your reply..."></textarea>
+            <button class="SubmitButton">Submit Reply</button>
+        </div>
+
+        <!-- Replies container -->
+        <div class="Replies">
+            <!-- Reply content will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Dark overlay for Login Modal -->
+    <div class="overlay" id="overlays"></div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <p>Login form will go here.</p>
+        <!-- Modal for user login -->
+        <span class="close">&times;</span>
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" id="usernamez" name="username" placeholder="Username" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>New to CaseConnect? <a href="#">Sign Up</a></p>
         </div>
     </div>
 
-    <!-- Sign Up Modal -->
-    <div id="signUpModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeSignUpModal()">&times;</span>
-            <p>Sign up form will go here.</p>
-        </div>
-    </div>
-
-    <div class="subforum_container">
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Categories</th>
-                </tr>
-                <tr>
-                    <th>Subforum Name</th>
-                    <th>Description</th>
-                    <th>Posts</th>
-                    <th>Last Post</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="#">Subforum 1</a></td>
-                    <td>This is the description for Subforum 1.</td>
-                    <td>123</td>
-                    <td>Today at 12:34</td>
-                </tr>
-                <!-- More rows here -->
-                <tr>
-                    <td><a href="#">Subforum 2</a></td>
-                    <td>This is the description for Subforum 2.</td>
-                    <td>456</td>
-                    <td>Yesterday at 11:30</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 3</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 4</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-                <tr>
-                    <td><a href="#">Subforum 5</a></td>
-                    <td>This is the description for Subforum 3.</td>
-                    <td>789</td>
-                    <td>Last Monday at 10:20</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <!-- Custom JavaScript file -->
+    <script src="../client/script.js"></script>
 </body>
 
 </html>
