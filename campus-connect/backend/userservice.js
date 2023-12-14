@@ -61,7 +61,7 @@ app.post("/campus-connect/users", (request, response) => {
   });
   
   // ----------------------------------------------
-  // (2) retrieve info for a specific user
+  // (2) retrieve username given user id
   // root URI: http://localhost:port/campus-connect/users/id/:userID
   // can be used to get the username for a user id
   // do not want to expose users sensitive information!!
@@ -98,6 +98,7 @@ app.post("/campus-connect/users", (request, response) => {
     });
   });
 
+ 
   // ----------------------------------------------
   // (4) retrieve the number of users with a username
   // can use to see if there is already a user with the same username
@@ -165,7 +166,7 @@ app.post("/campus-connect/users", (request, response) => {
   
    // ----------------------------------------------
   // (6) create a new admin
-  // can be used to let the user update their own information
+  // used for the admin to change users roles
   //only admin may change a userstype
   // city URI: http://localhost:port/campus-connect/users/update/role/:userid
   app.patch("/campus-connect/users/update/role/:userid", authenticateJWT, authorizeRole([2]),  (request, response) => {
@@ -213,7 +214,7 @@ app.post("/campus-connect/users", (request, response) => {
   });
 
    // ----------------------------------------------
-  // (7) Delete a user by user name, only admin can use this one
+  // (8) Delete a user by user name, only admin can use this one
   // city URI: http://localhost:port/campus-connect/users/:username
   app.delete("/campus-connect/users/:username", authenticateJWT, authorizeRole([2]), (request, response) => {
     const userName = request.params.username;
@@ -242,19 +243,19 @@ app.post("/campus-connect/users", (request, response) => {
  *       scheme: bearer
  *       bearerFormat: JWT
  *   schemas:
- *     Response:
+ *     User:
  *       type: object
  *       properties:
- *         ResponseID:
+ *         User_ID:
  *           type: integer
- *         PostID:
- *           type: integer
- *         UserID:
- *           type: integer
- *         Content:
+ *         UserName:
  *           type: string
- *         ResponceDate:
+ *         UserPassword:
  *           type: string
+ *         Email:
+ *           type: string
+ *         UserType:
+ *           type: integer
  */
 
 /**
@@ -294,5 +295,188 @@ app.post("/campus-connect/users", (request, response) => {
  *               Success: "Successful: User was added!"
  *       '400':
  *         description: Failed response
+ */
+
+/**
+ * @swagger
+ * /campus-connect/users/id/{userID}:
+ *   get:
+ *     tags: [User]
+ *     summary: retrieve the username for a user given username
+ *     description: 
+ *       retrieve username for a specific user given user id
+ *     parameters:
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         description: id of the user
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User' 
+ *                 
+ *       '400':
+ *         description: Failed response 
+ */
+
+/**
+ * @swagger
+ * /campus-connect/users/email/{userEmail}:
+ *   get:
+ *     tags: [User]
+ *     summary: retrieve the number of users  for a given email(should be 1 or 0)
+ *     description: 
+ *       can be used to make sure a user doesnt create an account with a duplicate email
+ *     parameters:
+ *       - in: path
+ *         name: userEmail
+ *         required: true
+ *         description: user email to search for
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User' 
+ *                 
+ *       '400':
+ *         description: Failed response 
+ */
+
+ /**
+ * @swagger
+ * /campus-connect/users/username/{userName}:
+ *   get:
+ *     tags: [User]
+ *     summary: retrieve the number of users  for a given username(should be 1 or 0)
+ *     description: 
+ *       can be used to make sure a user doesnt create an account with a duplicate username
+ *     parameters:
+ *       - in: path
+ *         name: userName
+ *         required: true
+ *         description: username to search
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *                  total:
+ *                  type: integer
+ *                  example: 1
+ *       '400':
+ *         description: Failed response 
+ */
+
+   /**
+ * @swagger
+ * /campus-connect/users/update:
+ *   patch:
+ *     tags: [User]
+ *     summary: Update users information
+ *     description: Can be used to allow the user to edit their account, userid is passed via jwt token.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: User was updated!."
+ *       '400':
+ *         description: Failed response
+ */
+
+/**
+ * @swagger
+ * /campus-connect/users/update/role/{userid}:
+ *   patch:
+ *     tags: [User]
+ *     summary: changes any users type, need to be admin to use
+ *     description: Admin has the ability to create moderators or more admins
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usertype:
+ *                 type: integer
+ *                 example: 2
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: User was updated!."
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: invalid credentials
+ */
+
+ /**
+ * @swagger
+ * /campus-connect/users:
+ *   delete:
+ *     tags: [User]
+ *     summary: deletes the logged in user
+ *     description: allows the user to delete their account(should be logged out quickly to prevent issues)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: User was deleted!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized error response
+ */
+
+    /**
+ * @swagger
+ * /campus-connect/users/{username}:
+ *   delete:
+ *     tags: [User]
+ *     summary: admin can use this endpoint to delete a user(by username)
+ *     description: allows admin to delete an account
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         description: username to delete
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               Success: "Successful: User was deleted!"
+ *       '400':
+ *         description: Failed response
+ *       '401':
+ *         description: Unauthorized error response
  */
 module.exports = app;
