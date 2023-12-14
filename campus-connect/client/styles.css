@@ -116,6 +116,8 @@ header .login_button .signup_button:hover{
 
 #Welcome-Banner {
     position: absolute;
+
+
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
@@ -126,6 +128,9 @@ header .login_button .signup_button:hover{
     animation: fadeIn 1.5s ease-in-out; /* Animation definition */
 }
 
+#Welcome-Banner h3 {
+    color: white !important; /* Replace 'your-desired-color' with the color you want */
+}
 @keyframes fadeIn {
     from {
         opacity: 0; /* Start with transparency */
