@@ -1,4 +1,5 @@
-
+let globalSubforumID;
+let globalSubforumName;
 
       $(document).ready(function () {
     $(".test").hide();
@@ -24,6 +25,8 @@
         
         const subforumID = $(this).data('subforum-id');
         const subforumName = $(this).find('h4').text();
+        globalSubforumID = subforumID;
+        globalSubforumName = subforumName;
         getSubforumDetailsAndPosts(subforumID, subforumName);
         $('.SubforumPage').show();
     });
@@ -151,8 +154,50 @@
         // Call a function to handle post deletion based on the postID
         deletePost(postID);
     });
+    $('#searchButton').on('click', function () {
+        var keyword = $('#searchInput').val();
+        if (keyword) {
+            searchPosts(keyword);
+        } else {
+            alert('Please enter a keyword to search.');
+        }
+    });
+
 
 });
+
+//Header Search Posts
+function searchPosts(keyword) {
+    $.ajax({
+        url: `http://localhost:3000/search/${keyword}`, // Ensure this is the correct URL
+        method: 'GET',
+        success: function (posts) {
+            // Assuming you have a function or method to display posts
+            displaySearchResults(posts);
+        },
+        error: function (error) {
+            console.error('Search failed:', error);
+            alert('Failed to perform search. Please try again later.');
+        }
+    });
+}
+
+function displaySearchResults(posts) {
+    // Clear existing posts
+    $('.Posts').empty();
+
+    // Append new search results
+    posts.forEach(function(post) {
+        var postHTML = `<div class="post">
+                            <div class="post-content" data-post-id="${post.postid}">
+                                <h3>${post.Title}</h3>
+                                <p>${post.Content}</p>
+                            </div>
+                            <!-- Other post details and actions here -->
+                        </div>`;
+        $('.Posts').append(postHTML);
+    });
+}
 
 //Header Logged In User DropDown
 function toggleUserDropdown() {
@@ -257,6 +302,37 @@ function updateSubforumPageUI(subforumData,subforumName) {
     });
 }
 // Function to handle deleting a post
+function deletePost(postID) {
+    // Implement deletion logic as needed
+    console.log('Deleting post with ID:', postID);
+
+    // Get the token from localStorage
+    const token = localStorage.getItem('token');
+
+    // Make an AJAX request to delete the post
+    $.ajax({
+        url: `http://localhost:3000/campus-connect/posts/${postID}`,
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: function (data) {
+            // Log the success message
+            console.log('Post deleted successfully:', data);
+
+            // After successful deletion, fetch the updated subforum data
+            const subforumID = globalSubforumID; // Assuming globalSubforumID is defined globally
+            const subforumName = globalSubforumName; // Assuming globalSubforumName is defined globally
+
+            // Fetch subforum details and posts
+            getSubforumDetailsAndPosts(subforumID, subforumName);
+        },
+        error: function (error) {
+            console.error('Failed to delete post:', error.responseJSON);
+        }
+    });
+}
+
 
 
 
